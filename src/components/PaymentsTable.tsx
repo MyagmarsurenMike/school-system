@@ -1,8 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Card, Table, Tag } from 'antd';
+import { Table } from 'antd';
 import { Payment, Language } from '@/types';
+import { formatMoney } from '@/utils';
+import { PaymentStatusTag } from '@/components/common/PaymentStatusTag';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 
@@ -34,16 +36,6 @@ const translations = {
   },
 };
 
-const getStatusColor = (status: string): string => {
-  if (status === 'paid') return 'success';
-  if (status === 'pending') return 'warning';
-  return 'error';
-};
-
-const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('mn-MN').format(amount) + '₮';
-};
-
 export default function PaymentsTable({ payments, language }: PaymentsTableProps) {
   const t = translations[language];
 
@@ -61,7 +53,7 @@ export default function PaymentsTable({ payments, language }: PaymentsTableProps
       width: 150,
       align: 'left',
       render: (amount: number) => (
-        <span className="font-semibold text-blue-600">{formatCurrency(amount)}</span>
+        <span className="font-semibold text-blue-600">{formatMoney(amount)}</span>
       ),
     },
     {
@@ -84,10 +76,9 @@ export default function PaymentsTable({ payments, language }: PaymentsTableProps
       key: 'status',
       width: 120,
       align: 'center',
-      render: (status: string) => {
-        const statusText = status === 'paid' ? t.paid : status === 'pending' ? t.pending : t.overdue;
-        return <Tag color={getStatusColor(status)} className="font-medium">{statusText}</Tag>;
-      },
+      render: (status: 'paid' | 'pending' | 'overdue') => (
+        <PaymentStatusTag status={status} language={language} />
+      ),
     },
   ];
 
@@ -108,7 +99,7 @@ export default function PaymentsTable({ payments, language }: PaymentsTableProps
                     2025-2026 оны Намар-н хичээлийн жилийн сургалтын төлбөр
                 </div>
                 <div className="text-2xl font-bold mt-1">
-                    {formatCurrency(totalAmount)}
+                    {formatMoney(totalAmount)}
                 </div>
             </div>
 
@@ -116,24 +107,22 @@ export default function PaymentsTable({ payments, language }: PaymentsTableProps
             <div className="grid grid-cols-4 text-xl divide-x divide-white">
                 <div className="px-2">
                     <div className="opacity-80">Эхний үлдэгдэл</div>
-                <div className="font-bold">{formatCurrency(0)}</div>
+                <div className="font-bold">{formatMoney(0)}</div>
                 </div>
                 <div className="px-2">
                     <div className="opacity-80">Хөнгөлөлт</div>
-                <div className="font-bold">{formatCurrency(0)}</div>
+                <div className="font-bold">{formatMoney(0)}</div>
                 </div>
                 <div className="px-2">
                     <div className="opacity-80">Төлсөн</div>
-                <div className="font-bold">{formatCurrency(paidAmount)}</div>
+                <div className="font-bold">{formatMoney(paidAmount)}</div>
                 </div>
                 <div className="px-2">
                     <div className="opacity-80">Дутуу төлбөр</div>
-                    <div className="font-bold">{formatCurrency(pendingAmount)}</div>
+                    <div className="font-bold">{formatMoney(pendingAmount)}</div>
                 </div>
             </div>
         </div>
-
-
 
         <Table
             className='bg-white rounded-lg shadow-sm py-4 px-4'

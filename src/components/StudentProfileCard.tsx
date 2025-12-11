@@ -8,6 +8,7 @@ import { Student, Language } from '@/types';
 interface StudentProfileCardProps {
   student: Student;
   language: Language;
+  small?: boolean;
 }
 
 const translations = {
@@ -33,7 +34,7 @@ const translations = {
   },
 };
 
-export default function StudentProfileCard({ student, language }: StudentProfileCardProps) {
+export default function StudentProfileCard({ student, language, small = false }: StudentProfileCardProps) {
   const t = translations[language];
   const gpaPercentage = (student.gpa / 4.0) * 100;
 

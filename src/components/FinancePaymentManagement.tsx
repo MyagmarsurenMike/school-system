@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Table, Tag, Button, Modal, Input, message, Card, Space, Statistic } from 'antd';
-import { DollarOutlined, SearchOutlined, EditOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { Table, Button, Modal, Input, message, Card, Statistic } from 'antd';
+import { SearchOutlined, EditOutlined, CheckCircleOutlined, UserOutlined } from '@ant-design/icons';
 import { Language, StudentPaymentPermission } from '@/types';
 import { mockStudentPayments } from '@/data/mockData';
+import { formatMoney } from '@/utils';
+import { PaymentStatusTag } from '@/components/common/PaymentStatusTag';
 import type { ColumnsType } from 'antd/es/table';
 
 interface FinancePaymentManagementProps {
@@ -23,9 +25,6 @@ const translations = {
     actions: 'Үйлдэл',
     edit: 'Засах',
     search: 'Хайх',
-    paid: 'Төлсөн',
-    pending: 'Хүлээгдэж буй',
-    overdue: 'Хугацаа хэтэрсэн',
     updatePayment: 'Төлбөр шинэчлэх',
     paidAmountLabel: 'Төлсөн дүн',
     save: 'Хадгалах',
@@ -47,9 +46,6 @@ const translations = {
     actions: 'Actions',
     edit: 'Edit',
     search: 'Search',
-    paid: 'Paid',
-    pending: 'Pending',
-    overdue: 'Overdue',
     updatePayment: 'Update Payment',
     paidAmountLabel: 'Paid Amount',
     save: 'Save',
@@ -60,14 +56,6 @@ const translations = {
     totalPending: 'Pending',
     totalRevenue: 'Total Revenue',
   },
-};
-
-const formatMoney = (amount: number) => {
-  return new Intl.NumberFormat('mn-MN', {
-    style: 'currency',
-    currency: 'MNT',
-    minimumFractionDigits: 0,
-  }).format(amount);
 };
 
 export default function FinancePaymentManagement({ language }: FinancePaymentManagementProps) {
@@ -103,16 +91,6 @@ export default function FinancePaymentManagement({ language }: FinancePaymentMan
     setStudents(updatedStudents);
     message.success(t.updateSuccess);
     setEditModalVisible(false);
-  };
-
-  const getStatusTag = (status: string) => {
-    const statusConfig = {
-      paid: { color: 'green', text: t.paid },
-      pending: { color: 'orange', text: t.pending },
-      overdue: { color: 'red', text: t.overdue },
-    };
-    const config = statusConfig[status as keyof typeof statusConfig];
-    return <Tag color={config.color}>{config.text}</Tag>;
   };
 
   const columns: ColumnsType<StudentPaymentPermission> = [
@@ -162,7 +140,7 @@ export default function FinancePaymentManagement({ language }: FinancePaymentMan
       key: 'paymentStatus',
       width: 120,
       align: 'center',
-      render: (status: string) => getStatusTag(status),
+      render: (status: 'paid' | 'pending' | 'overdue') => <PaymentStatusTag status={status} language={language} />,
     },
     {
       title: t.actions,
@@ -202,7 +180,7 @@ export default function FinancePaymentManagement({ language }: FinancePaymentMan
           <Statistic
             title={t.totalStudents}
             value={totalStudents}
-            prefix={<DollarOutlined />}
+            prefix={<UserOutlined />}
             styles={{ content: { color: '#3f8600' } }}
           />
         </Card>

@@ -36,9 +36,6 @@ export default function DashboardPage() {
           </div>
         );
       
-      case 'calendar':
-        return <WeeklyScheduleView schedules={mockSchedules} language={language} />;
-
       case 'lectures':
         return <LecturesTab language={language} />;
       

@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Button, Switch, message, Card, Input, Space, Progress, Tooltip, App } from 'antd';
+import { Table, Tag, Switch, Card, Input, Progress, Tooltip, App } from 'antd';
 import { SearchOutlined, LockOutlined, UnlockOutlined, CheckCircleOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { Language, StudentPaymentPermission } from '@/types';
 import { mockStudentPayments } from '@/data/mockData';
+import { formatMoney, calculatePercentage, getProgressColor } from '@/utils';
+import { PaymentStatusTag } from '@/components/common/PaymentStatusTag';
 import type { ColumnsType } from 'antd/es/table';
 
 interface FinanceGradePermissionProps {
@@ -64,14 +66,6 @@ const translations = {
     autoGranted: 'Auto-granted (paid 50%+ of tuition)',
     autoGrantInfo: 'Students who paid 50%+ automatically get grade view permission',
   },
-};
-
-const formatMoney = (amount: number) => {
-  return new Intl.NumberFormat('mn-MN', {
-    style: 'currency',
-    currency: 'MNT',
-    minimumFractionDigits: 0,
-  }).format(amount);
 };
 
 // Helper function to check if student qualifies for auto permission (paid >= 50%)
@@ -150,28 +144,6 @@ export default function FinanceGradePermission({ language }: FinanceGradePermiss
     });
   };
 
-  const getStatusTag = (status: string) => {
-    const statusConfig = {
-      paid: { color: 'green', text: t.paid },
-      pending: { color: 'orange', text: t.pending },
-      overdue: { color: 'red', text: t.overdue },
-    };
-    const config = statusConfig[status as keyof typeof statusConfig];
-    return <Tag color={config.color}>{config.text}</Tag>;
-  };
-
-  const getPaymentPercentage = (paid: number, total: number): number => {
-    if (total === 0) return 0;
-    return Math.round((paid / total) * 100);
-  };
-
-  const getProgressColor = (percentage: number): string => {
-    if (percentage >= 100) return '#52c41a';
-    if (percentage >= 50) return '#1890ff';
-    if (percentage >= 25) return '#faad14';
-    return '#ff4d4f';
-  };
-
   const columns: ColumnsType<StudentPaymentPermission & { isAutoGranted?: boolean }> = [
     {
       title: t.studentId,
@@ -200,7 +172,7 @@ export default function FinanceGradePermission({ language }: FinanceGradePermiss
       key: 'paymentProgress',
       width: 200,
       render: (_, record) => {
-        const percentage = getPaymentPercentage(record.paidAmount, record.totalAmount);
+        const percentage = calculatePercentage(record.paidAmount, record.totalAmount);
         return (
           <div className="space-y-1">
             <div className="flex justify-between text-xs">
@@ -224,7 +196,7 @@ export default function FinanceGradePermission({ language }: FinanceGradePermiss
       key: 'paymentStatus',
       width: 140,
       align: 'center',
-      render: (status: string) => getStatusTag(status),
+      render: (status: 'paid' | 'pending' | 'overdue') => <PaymentStatusTag status={status} language={language} />,
     },
     {
       title: t.canViewGrades,

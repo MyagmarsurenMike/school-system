@@ -90,6 +90,7 @@ export interface StudentGradeInput {
   finalScore?: number;
 }
 
+/** Represents an uploaded lecture file by a teacher */
 export interface Lecture {
   id: string;
   courseId: string;
@@ -111,4 +112,34 @@ export interface StudentPaymentPermission {
   totalAmount: number;
   paidAmount: number;
   semester: string;
+}
+
+// --- COURSE MATERIAL TYPES (for student lecture viewing) ---
+
+/** Defines the types of course materials (e.g., PDF, PPT) */
+export type CourseMaterialType = 'pdf' | 'ppt';
+
+/** Represents a single course material file attached to a lecture */
+export interface CourseMaterial {
+  type: CourseMaterialType;
+  name: string;
+  url: string;
+}
+
+/** Represents a single lecture item within a subject (student view) */
+export interface CourseLecture {
+  id: number;
+  title: string;
+  description: string;
+  materials: CourseMaterial[];
+}
+
+/** Represents a subject/course containing multiple lectures (student view) */
+export interface Subject {
+  id: number;
+  title: string;
+  description: string;
+  credit: number;
+  teacher: string;
+  lectures: CourseLecture[];
 }

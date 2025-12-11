@@ -1,65 +1,91 @@
 import React, { useState } from 'react';
-import { Modal } from 'antd';
-import { FilePdfOutlined, FilePptOutlined, ArrowLeftOutlined, DownloadOutlined, EyeOutlined } from '@ant-design/icons';
-import { Language } from '@/types';
-// Import the LECTURES data and Lecture/Material types
-import { LECTURES, Lecture, Material } from '../constants/lecture'; // Adjust path as necessary
+import { Modal, Pagination } from 'antd';
+import { FilePdfOutlined, FilePptOutlined, ArrowLeftOutlined, EyeOutlined, BookOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import { Language, Subject, CourseLecture, CourseMaterial } from '@/types';
+import { SUBJECTS } from '@/constants/lecture';
 
 interface LecturesTabProps {
     language?: Language;
 }
 
 const LecturesTab: React.FC<LecturesTabProps> = ({ language = 'mn' }) => {
-    // Use the imported Lecture type
-    const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null);
+    // State for navigation: null = subjects grid, subject = lectures list, lecture = detail view
+    const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
+    const [selectedLecture, setSelectedLecture] = useState<CourseLecture | null>(null);
     const [previewOpen, setPreviewOpen] = useState(false);
-    // Use the imported Material type
-    const [previewMaterial, setPreviewMaterial] = useState<Material | null>(null);
+    const [previewMaterial, setPreviewMaterial] = useState<CourseMaterial | null>(null);
+    
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 5;
 
-    // Use Material type for the argument
-    const handlePreview = (material: Material) => {
+    const handlePreview = (material: CourseMaterial) => {
         setPreviewMaterial(material);
         setPreviewOpen(true);
     };
 
-    // Use the imported constant data
-    const lectures = LECTURES; 
+    const handleBackToSubjects = () => {
+        setSelectedSubject(null);
+        setSelectedLecture(null);
+        setCurrentPage(1);
+    };
 
-    if (selectedLecture) {
+    const handleBackToLectures = () => {
+        setSelectedLecture(null);
+    };
+
+    const handleSelectSubject = (subject: Subject) => {
+        setSelectedSubject(subject);
+        setCurrentPage(1);
+    };
+
+    const handleSelectLecture = (lecture: CourseLecture) => {
+        setSelectedLecture(lecture);
+    };
+
+    // Get paginated lectures
+    const getPaginatedLectures = () => {
+        if (!selectedSubject) return [];
+        const startIndex = (currentPage - 1) * pageSize;
+        return selectedSubject.lectures.slice(startIndex, startIndex + pageSize);
+    };
+
+    // View 3: Lecture Detail View (watching lesson)
+    if (selectedSubject && selectedLecture) {
         return (
             <div className="p-5 font-sans">
                 <button 
-                    onClick={() => setSelectedLecture(null)}
+                    onClick={handleBackToLectures}
                     className="mb-6 flex items-center text-blue-600 hover:text-blue-800 transition-colors"
                 >
                     <ArrowLeftOutlined className="mr-2" />
-                    {language === 'mn' ? 'Буцах' : 'Back'}
+                    {language === 'mn' ? 'Лекц жагсаалт руу буцах' : 'Back to Lectures'}
                 </button>
 
                 <div className="bg-white rounded-lg shadow-md p-8 border border-gray-200">
                     <div className="border-b border-gray-200 pb-6 mb-6">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-2">{selectedLecture.title}</h2>
-                        <p className="text-gray-600 text-lg">{selectedLecture.description}</p>
-                        <div className="flex items-center mt-4 text-sm text-gray-500">
-                            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full mr-4">
-                                {selectedLecture.teacher}
+                        <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+                                {selectedSubject.title}
                             </span>
                             <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full">
-                                Credit: {selectedLecture.credit}
+                                {selectedSubject.teacher}
                             </span>
                         </div>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-2">{selectedLecture.title}</h2>
+                        <p className="text-gray-600 text-lg">{selectedLecture.description}</p>
                     </div>
 
                     <h3 className="text-xl font-semibold text-gray-800 mb-4">
                         {language === 'mn' ? 'Хичээлийн материал' : 'Course Materials'}
                     </h3>
                     
-                    <div className="w-full">
-                        {selectedLecture.materials.map((material: Material, index: number) => (
+                    <div className="w-full space-y-3">
+                        {selectedLecture.materials.map((material: CourseMaterial, index: number) => (
                             <div key={index} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                                 <div className="flex items-center">
                                     <div className={`p-3 rounded-lg mr-4 ${material.type === 'pdf' ? 'bg-red-100 text-red-600' : 'bg-orange-100 text-orange-600'}`}>
-                                        {material.type === 'pdf'||'ppt'  ? <FilePdfOutlined className="text-xl" /> : <FilePptOutlined className="text-xl" />}
+                                        {material.type === 'pdf' ? <FilePdfOutlined className="text-xl" /> : <FilePptOutlined className="text-xl" />}
                                     </div>
                                     <div>
                                         <p className="font-medium text-gray-800">{material.name}</p>
@@ -69,10 +95,11 @@ const LecturesTab: React.FC<LecturesTabProps> = ({ language = 'mn' }) => {
                                 <div className="flex gap-2">
                                     <button 
                                         onClick={() => handlePreview(material)}
-                                        className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                                         title={language === 'mn' ? 'Харах' : 'Preview'}
                                     >
                                         <EyeOutlined className="text-lg" />
+                                        {language === 'mn' ? 'Үзэх' : 'View'}
                                     </button>
                                 </div>
                             </div>
@@ -103,21 +130,113 @@ const LecturesTab: React.FC<LecturesTabProps> = ({ language = 'mn' }) => {
         );
     }
 
+    // View 2: Lectures List with Pagination
+    if (selectedSubject) {
+        const paginatedLectures = getPaginatedLectures();
+        const totalLectures = selectedSubject.lectures.length;
+
+        return (
+            <div className="p-5 font-sans">
+                <button 
+                    onClick={handleBackToSubjects}
+                    className="mb-6 flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+                >
+                    <ArrowLeftOutlined className="mr-2" />
+                    {language === 'mn' ? 'Хичээлүүд рүү буцах' : 'Back to Subjects'}
+                </button>
+
+                <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-6">
+                    <div className="flex items-start justify-between">
+                        <div>
+                            <h2 className="text-2xl font-bold text-gray-800 mb-2">{selectedSubject.title}</h2>
+                            <p className="text-gray-600">{selectedSubject.description}</p>
+                        </div>
+                        <div className="flex gap-2">
+                            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                                {selectedSubject.teacher}
+                            </span>
+                            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                                {language === 'mn' ? 'Кредит' : 'Credit'}: {selectedSubject.credit}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    {language === 'mn' ? `Лекцүүд (${totalLectures})` : `Lectures (${totalLectures})`}
+                </h3>
+
+                <div className="space-y-3">
+                    {paginatedLectures.map((lecture, index) => (
+                        <div
+                            key={lecture.id}
+                            onClick={() => handleSelectLecture(lecture)}
+                            className="cursor-pointer flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-all"
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold">
+                                    {(currentPage - 1) * pageSize + index + 1}
+                                </div>
+                                <div>
+                                    <h4 className="font-medium text-gray-800">{lecture.title}</h4>
+                                    <p className="text-sm text-gray-500">{lecture.description}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <span className="text-sm text-gray-400">
+                                    {lecture.materials.length} {language === 'mn' ? 'материал' : 'materials'}
+                                </span>
+                                <PlayCircleOutlined className="text-2xl text-blue-500" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {totalLectures > pageSize && (
+                    <div className="flex justify-center mt-6">
+                        <Pagination
+                            current={currentPage}
+                            total={totalLectures}
+                            pageSize={pageSize}
+                            onChange={(page) => setCurrentPage(page)}
+                            showSizeChanger={false}
+                        />
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    // View 1: Subjects Grid
     return (
         <div className="p-5 font-sans">
+            <h2 className="text-xl font-semibold text-gray-800 mb-6">
+                {language === 'mn' ? 'Хичээлүүд' : 'Subjects'}
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {lectures.map((lecture) => (
+                {SUBJECTS.map((subject) => (
                     <div
-                        key={lecture.id}
-                        onClick={() => setSelectedLecture(lecture)}
+                        key={subject.id}
+                        onClick={() => handleSelectSubject(subject)}
                         className="cursor-pointer border border-gray-300 rounded-lg p-5 shadow-md bg-white transform transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
                     >
-                        <h3 className="mb-2 text-lg font-semibold text-blue-600">{lecture.title}</h3>
-                        <p className="text-gray-600">{lecture.description}</p>
-                        <div className="mt-4 border-t border-gray-300"></div>
-                        <div className='flex justify-between'>
-                            <p className="mt-2 px-2 bg-green-400 rounded-2xl text-sm text-white">КР: {lecture.credit}</p>
-                            <p className="mt-2 text-sm px-2">{lecture.teacher}</p>
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
+                                <BookOutlined className="text-xl" />
+                            </div>
+                            <h3 className="text-lg font-semibold text-blue-600">{subject.title}</h3>
+                        </div>
+                        <p className="text-gray-600 text-sm mb-4">{subject.description}</p>
+                        <div className="border-t border-gray-200 pt-3">
+                            <div className="flex justify-between items-center">
+                                <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">
+                                    {language === 'mn' ? 'КР' : 'CR'}: {subject.credit}
+                                </span>
+                                <span className="text-xs text-gray-500">
+                                    {subject.lectures.length} {language === 'mn' ? 'лекц' : 'lectures'}
+                                </span>
+                            </div>
+                            <p className="mt-2 text-sm text-gray-600">{subject.teacher}</p>
                         </div>
                     </div>
                 ))}

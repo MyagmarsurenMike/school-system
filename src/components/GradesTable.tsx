@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Card, Table, Tag } from 'antd';
+import { Card, Table } from 'antd';
 import { TrophyOutlined } from '@ant-design/icons';
 import { Grade, Language } from '@/types';
+import { GradeTag } from '@/components/common';
 import type { ColumnsType } from 'antd/es/table';
 
 interface GradesTableProps {
@@ -34,14 +35,6 @@ const translations = {
     totalCredits: 'Total Credits',
     avgGrade: 'Average',
   },
-};
-
-const getGradeColor = (grade: string): string => {
-  if (grade === 'A') return 'green';
-  if (grade === 'A-') return 'lime';
-  if (grade.startsWith('B')) return 'blue';
-  if (grade.startsWith('C')) return 'orange';
-  return 'red';
 };
 
 export default function GradesTable({ grades, language }: GradesTableProps) {
@@ -79,11 +72,7 @@ export default function GradesTable({ grades, language }: GradesTableProps) {
       key: 'grade',
       width: 80,
       align: 'center',
-      render: (grade: string) => (
-        <Tag color={getGradeColor(grade)} className="font-bold m-0">
-          {grade}
-        </Tag>
-      ),
+      render: (grade: string) => <GradeTag grade={grade} />,
     },
     {
       title: t.gradePoint,

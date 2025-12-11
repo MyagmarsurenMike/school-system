@@ -25,7 +25,6 @@ interface LeftSidebarProps {
 const translations = {
   mn: {
     home: 'Нүүр хуудас',
-    calendar: 'Мэдээлэл',
     studentInfo: 'Миний мэдээлэл',
     payments: 'Төлбөрийн мэдээлэл',
     surveys: 'Судалгаа',
@@ -36,7 +35,6 @@ const translations = {
   },
   en: {
     home: 'Home',
-    calendar: 'Schedule',
     studentInfo: 'My Info',
     payments: 'Payments',
     surveys: 'Survey',
@@ -55,11 +53,11 @@ export default function LeftSidebar({ language, activeKey, onMenuClick }: LeftSi
       key: 'home', 
       icon: <HomeOutlined />, 
       label: t.home,
-    },
+    },    
     { 
-      key: 'calendar', 
-      icon: <CalendarOutlined />, 
-      label: t.calendar,
+      key: 'lessons', 
+      icon: <BookOutlined />, 
+      label: t.lessons,
     },
     { 
       key: 'student-info', 
@@ -71,11 +69,7 @@ export default function LeftSidebar({ language, activeKey, onMenuClick }: LeftSi
       icon: <DollarOutlined />, 
       label: t.payments,
     },
-    { 
-      key: 'lessons', 
-      icon: <BookOutlined />, 
-      label: t.lessons,
-    },
+
     { 
       key: 'guides', 
       icon: <QuestionCircleOutlined />, 
