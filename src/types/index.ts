@@ -1,7 +1,58 @@
-export interface Student {
-  id: string;
+// =============================================================================
+// CORE TYPES - Fundamental types used throughout the application
+// =============================================================================
+
+/** Supported languages for internationalization */
+export type Language = 'mn' | 'en';
+
+/** User role type for permission-based UI */
+export type UserRole = 'student' | 'teacher' | 'admin' | 'finance';
+
+/** Payment status type */
+export type PaymentStatus = 'paid' | 'pending' | 'overdue';
+
+/** Schedule class type */
+export type ScheduleType = 'lecture' | 'lab' | 'tutorial';
+
+/** Calendar event type */
+export type CalendarEventType = 'exam' | 'assignment' | 'holiday' | 'event';
+
+/** Lecture file type */
+export type LectureFileType = 'pdf' | 'pptx' | 'docx' | 'video';
+
+/** Course material type for student lecture viewing */
+export type CourseMaterialType = 'pdf' | 'ppt';
+
+// =============================================================================
+// BASE INTERFACES - Common patterns used across entities
+// =============================================================================
+
+/** Base interface for entities with bilingual names */
+interface BilingualEntity {
   name: string;
   nameEn: string;
+}
+
+/** Base interface for entities with bilingual titles */
+interface BilingualTitleEntity {
+  title: string;
+  titleEn: string;
+}
+
+/** Base interface for course-related entities */
+interface CourseBase {
+  courseCode: string;
+  courseName: string;
+  courseNameEn: string;
+}
+
+// =============================================================================
+// USER ENTITIES
+// =============================================================================
+
+/** Represents a student in the system */
+export interface Student extends BilingualEntity {
+  id: string;
   major: string;
   gpa: number;
   semester: string;
@@ -9,15 +60,34 @@ export interface Student {
   email: string;
   phone: string;
   photo?: string;
-  paymentStatus: 'paid' | 'pending' | 'overdue';
+  paymentStatus: PaymentStatus;
   canViewGrades: boolean;
 }
 
-export interface Grade {
+/** Represents a teacher in the system */
+export interface Teacher extends BilingualEntity {
   id: string;
-  courseCode: string;
-  courseName: string;
-  courseNameEn: string;
+  email: string;
+  phone: string;
+  department: string;
+  photo?: string;
+}
+
+// =============================================================================
+// ACADEMIC ENTITIES
+// =============================================================================
+
+/** Represents a course in the system */
+export interface Course extends CourseBase {
+  id: string;
+  credits: number;
+  teacherId: string;
+  semester: string;
+}
+
+/** Represents a student's grade for a course */
+export interface Grade extends CourseBase {
+  id: string;
   credits: number;
   grade: string;
   gradePoint: number;
@@ -25,111 +95,72 @@ export interface Grade {
   teacher: string;
 }
 
-export interface Schedule {
+/** Represents a class schedule entry */
+export interface Schedule extends CourseBase {
   id: string;
-  courseCode: string;
-  courseName: string;
-  courseNameEn: string;
   teacher: string;
   room: string;
-  dayOfWeek: number; // 0-6 (Monday-Sunday)
+  /** Day of week: 0-6 (Monday-Sunday) */
+  dayOfWeek: number;
   startTime: string;
   endTime: string;
-  type: 'lecture' | 'lab' | 'tutorial';
+  type: ScheduleType;
 }
 
-export interface CalendarEvent {
+// =============================================================================
+// CALENDAR & EVENTS
+// =============================================================================
+
+/** Represents a calendar event */
+export interface CalendarEvent extends BilingualTitleEntity {
   id: string;
-  title: string;
-  titleEn: string;
   date: string;
-  type: 'exam' | 'assignment' | 'holiday' | 'event';
+  type: CalendarEventType;
   description?: string;
 }
 
+// =============================================================================
+// FINANCIAL ENTITIES
+// =============================================================================
+
+/** Represents a payment record */
 export interface Payment {
   id: string;
   amount: number;
   dueDate: string;
   paidDate?: string;
-  status: 'paid' | 'pending' | 'overdue';
+  status: PaymentStatus;
   description: string;
 }
 
-export type Language = 'mn' | 'en';
-
-/** User role type for permission-based UI */
-export type UserRole = 'student' | 'teacher' | 'admin' | 'finance';
-
-/** Schedule class type */
-export type ScheduleType = 'lecture' | 'lab' | 'tutorial';
-
-/** Payment status type */
-export type PaymentStatus = 'paid' | 'pending' | 'overdue';
-
-/** Calendar event type */
-export type CalendarEventType = 'exam' | 'assignment' | 'holiday' | 'event';
-
-export interface Teacher {
-  id: string;
-  name: string;
-  nameEn: string;
-  email: string;
-  phone: string;
-  department: string;
-  photo?: string;
-}
-
-export interface Course {
-  id: string;
-  courseCode: string;
-  courseName: string;
-  courseNameEn: string;
-  credits: number;
-  teacherId: string;
-  semester: string;
-}
-
-export interface StudentGradeInput {
+/** Represents student payment permission status */
+export interface StudentPaymentPermission extends BilingualEntity {
   studentId: string;
-  studentName: string;
-  studentNameEn: string;
-  courseId: string;
-  grade?: string;
-  gradePoint?: number;
-  attendance?: number;
-  midtermScore?: number;
-  finalScore?: number;
-}
-
-/** Represents an uploaded lecture file by a teacher */
-export interface Lecture {
-  id: string;
-  courseId: string;
-  title: string;
-  titleEn: string;
-  description?: string;
-  uploadDate: string;
-  fileUrl: string;
-  fileType: 'pdf' | 'pptx' | 'docx' | 'video';
-  fileSize: string;
-}
-
-export interface StudentPaymentPermission {
-  studentId: string;
-  studentName: string;
-  studentNameEn: string;
-  paymentStatus: 'paid' | 'pending' | 'overdue';
+  paymentStatus: PaymentStatus;
   canViewGrades: boolean;
   totalAmount: number;
   paidAmount: number;
   semester: string;
 }
 
-// --- COURSE MATERIAL TYPES (for student lecture viewing) ---
+// =============================================================================
+// LECTURE & COURSE MATERIALS (Teacher Upload)
+// =============================================================================
 
-/** Defines the types of course materials (e.g., PDF, PPT) */
-export type CourseMaterialType = 'pdf' | 'ppt';
+/** Represents an uploaded lecture file by a teacher */
+export interface Lecture extends BilingualTitleEntity {
+  id: string;
+  courseId: string;
+  description?: string;
+  uploadDate: string;
+  fileUrl: string;
+  fileType: LectureFileType;
+  fileSize: string;
+}
+
+// =============================================================================
+// COURSE MATERIALS (Student View)
+// =============================================================================
 
 /** Represents a single course material file attached to a lecture */
 export interface CourseMaterial {
@@ -156,7 +187,9 @@ export interface Subject {
   lectures: CourseLecture[];
 }
 
-// --- STUDENT MANAGEMENT TYPES ---
+// =============================================================================
+// INPUT/FORM TYPES
+// =============================================================================
 
 /** Input type for creating a new student */
 export interface StudentInput {
@@ -170,6 +203,19 @@ export interface StudentInput {
   semester: string;
 }
 
+/** Input type for grade entry by teachers */
+export interface StudentGradeInput {
+  studentId: string;
+  studentName: string;
+  studentNameEn: string;
+  courseId: string;
+  grade?: string;
+  gradePoint?: number;
+  attendance?: number;
+  midtermScore?: number;
+  finalScore?: number;
+}
+
 /** Input type for assigning a schedule to a student */
 export interface StudentScheduleInput {
   studentId: string;
@@ -181,5 +227,5 @@ export interface StudentScheduleInput {
   dayOfWeek: number;
   startTime: string;
   endTime: string;
-  type: 'lecture' | 'lab' | 'tutorial';
+  type: ScheduleType;
 }

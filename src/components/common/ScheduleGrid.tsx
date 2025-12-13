@@ -45,7 +45,7 @@ export const ScheduleGrid: React.FC<ScheduleGridProps> = ({
   return (
     <div className="overflow-x-auto">
       {editable && (
-        <div className="p-3 bg-blue-50 border-b border-blue-200 text-sm text-blue-700">
+        <div className="p-3 bg-blue-50 border-b border-blue-200 text-sm text-blue-700 my-4 rounded-lg flex items-center">
           <EditOutlined className="mr-2" />
           {t.editPermissionHint}
         </div>

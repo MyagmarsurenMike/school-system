@@ -1,12 +1,27 @@
 /**
  * Navigation and sidebar translations
+ * @module constants/navigation
  */
 
-import { Language, UserRole } from '@/types';
+import { Language } from '@/types';
 
+// =============================================================================
+// TYPE DEFINITIONS
+// =============================================================================
+
+/** Generic type for bilingual translation records */
+type TranslationRecord<T> = Readonly<Record<Language, T>>;
+
+/** Navigation translations interface */
 export interface NavigationTranslations {
+  // Common navigation
   home: string;
   calendar: string;
+  logout: string;
+  exit: string;
+  settings: string;
+  
+  // Student navigation
   studentInfo: string;
   payments: string;
   surveys: string;
@@ -14,25 +29,36 @@ export interface NavigationTranslations {
   schedules: string;
   definitions: string;
   guides: string;
-  exit: string;
-  logout: string;
+  support: string;
+  
+  // Teacher navigation
   dashboard: string;
   myCourses: string;
   gradeEntry: string;
   uploadLecture: string;
   studentManager: string;
-  settings: string;
   eLearning: string;
   training: string;
-  support: string;
+  
+  // Finance navigation
   financeManagement: string;
   gradePermissions: string;
 }
 
-export const navigationTranslations: Record<Language, NavigationTranslations> = {
+// =============================================================================
+// TRANSLATION DATA
+// =============================================================================
+
+export const navigationTranslations: TranslationRecord<NavigationTranslations> = {
   mn: {
+    // Common
     home: 'Нүүр хуудас',
     calendar: 'Календарь',
+    logout: 'Гарах',
+    exit: 'Гарах',
+    settings: 'Тохиргоо',
+    
+    // Student
     studentInfo: 'Миний мэдээлэл',
     payments: 'Төлбөрийн мэдээлэл',
     surveys: 'Судалгаа',
@@ -40,23 +66,30 @@ export const navigationTranslations: Record<Language, NavigationTranslations> = 
     schedules: 'Сургалт',
     definitions: 'Тодорхойлолт',
     guides: 'Хэтэч',
-    exit: 'Гарах',
-    logout: 'Гарах',
+    support: 'Хэтэч',
+    
+    // Teacher
     dashboard: 'Хяналтын самбар',
     myCourses: 'Миний хичээлүүд',
     gradeEntry: 'Үнэлгээ оруулах',
     uploadLecture: 'Хичээл байршуулах',
     studentManager: 'Оюутны удирдлага',
-    settings: 'Тохиргоо',
     eLearning: 'Цахим сургалт',
     training: 'Сургалт',
-    support: 'Хэтэч',
+    
+    // Finance
     financeManagement: 'Санхүүгийн удирдлага',
     gradePermissions: 'Дүнгийн эрх',
   },
   en: {
+    // Common
     home: 'Home',
     calendar: 'Calendar',
+    logout: 'Logout',
+    exit: 'Exit',
+    settings: 'Settings',
+    
+    // Student
     studentInfo: 'My Info',
     payments: 'Payments',
     surveys: 'Surveys',
@@ -64,18 +97,19 @@ export const navigationTranslations: Record<Language, NavigationTranslations> = 
     schedules: 'Schedules',
     definitions: 'Definitions',
     guides: 'Guides',
-    exit: 'Exit',
-    logout: 'Logout',
+    support: 'Support',
+    
+    // Teacher
     dashboard: 'Dashboard',
     myCourses: 'My Courses',
     gradeEntry: 'Grade Entry',
     uploadLecture: 'Upload Lecture',
     studentManager: 'Student Manager',
-    settings: 'Settings',
     eLearning: 'E-Learning',
     training: 'Training',
-    support: 'Support',
+    
+    // Finance
     financeManagement: 'Finance Management',
     gradePermissions: 'Grade Permissions',
   },
-};
+} as const;

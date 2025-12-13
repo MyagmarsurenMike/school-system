@@ -107,7 +107,7 @@ export const scheduleTranslations: Record<Language, ScheduleTranslations> = {
     lecture: 'Лекц',
     lab: 'Лаб',
     tutorial: 'Семинар',
-    editPermissionHint: 'Та хуваарийг засах эрхтэй байна. Нүд дээр дарж засах эсвэл нэмэх боломжтой.',
+    editPermissionHint: 'Та хуваарийг засах эрхтэй байна. Хүснэгтийн нүд дээр дарж засах эсвэл нэмэх боломжтой.',
     addSchedule: 'Хуваарь нэмэх',
     editSchedule: 'Хуваарь засах',
     deleteSchedule: 'Устгах',

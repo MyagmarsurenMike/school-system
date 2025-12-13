@@ -1,15 +1,25 @@
 /**
  * Shared translations for common UI elements
+ * @module constants/translations
  */
 
-import { Language } from '@/types';
+import { Language, PaymentStatus } from '@/types';
 
+// =============================================================================
+// TYPE DEFINITIONS
+// =============================================================================
+
+/** Generic type for bilingual translation records */
+type TranslationRecord<T> = Readonly<Record<Language, T>>;
+
+/** Payment status translations interface */
 export interface PaymentStatusTranslations {
   paid: string;
   pending: string;
   overdue: string;
 }
 
+/** Common UI element translations interface */
 export interface CommonTranslations {
   search: string;
   save: string;
@@ -31,6 +41,7 @@ export interface CommonTranslations {
   darkMode: string;
 }
 
+/** Grades table translations interface */
 export interface GradesTranslations {
   title: string;
   courseCode: string;
@@ -43,6 +54,7 @@ export interface GradesTranslations {
   avgGrade: string;
 }
 
+/** Calendar translations interface */
 export interface CalendarTranslations {
   title: string;
   exam: string;
@@ -52,6 +64,7 @@ export interface CalendarTranslations {
   upcomingEvents: string;
 }
 
+/** Payments table translations interface */
 export interface PaymentsTableTranslations {
   title: string;
   description: string;
@@ -68,6 +81,7 @@ export interface PaymentsTableTranslations {
   semesterFee: string;
 }
 
+/** Student profile translations interface */
 export interface StudentProfileTranslations {
   profile: string;
   studentId: string;
@@ -80,6 +94,7 @@ export interface StudentProfileTranslations {
   yearSuffix: string;
 }
 
+/** Top header translations interface */
 export interface TopHeaderTranslations {
   schoolName: string;
   semester: string;
@@ -87,7 +102,11 @@ export interface TopHeaderTranslations {
   notifications: string;
 }
 
-export const paymentStatusTranslations: Record<Language, PaymentStatusTranslations> = {
+// =============================================================================
+// TRANSLATION DATA
+// =============================================================================
+
+export const paymentStatusTranslations: TranslationRecord<PaymentStatusTranslations> = {
   mn: {
     paid: 'Төлсөн',
     pending: 'Хүлээгдэж буй',
@@ -98,9 +117,9 @@ export const paymentStatusTranslations: Record<Language, PaymentStatusTranslatio
     pending: 'Pending',
     overdue: 'Overdue',
   },
-};
+} as const;
 
-export const commonTranslations: Record<Language, CommonTranslations> = {
+export const commonTranslations: TranslationRecord<CommonTranslations> = {
   mn: {
     search: 'Хайх',
     save: 'Хадгалах',
@@ -141,9 +160,9 @@ export const commonTranslations: Record<Language, CommonTranslations> = {
     welcome: 'Welcome',
     darkMode: 'Dark Mode',
   },
-};
+} as const;
 
-export const gradesTranslations: Record<Language, GradesTranslations> = {
+export const gradesTranslations: TranslationRecord<GradesTranslations> = {
   mn: {
     title: 'Дүнгийн хүснэгт',
     courseCode: 'Код',
@@ -166,9 +185,9 @@ export const gradesTranslations: Record<Language, GradesTranslations> = {
     totalCredits: 'Total Credits',
     avgGrade: 'Average',
   },
-};
+} as const;
 
-export const calendarTranslations: Record<Language, CalendarTranslations> = {
+export const calendarTranslations: TranslationRecord<CalendarTranslations> = {
   mn: {
     title: 'Календарь',
     exam: 'Шалгалт',
@@ -185,9 +204,9 @@ export const calendarTranslations: Record<Language, CalendarTranslations> = {
     event: 'Event',
     upcomingEvents: 'Upcoming Events',
   },
-};
+} as const;
 
-export const paymentsTableTranslations: Record<Language, PaymentsTableTranslations> = {
+export const paymentsTableTranslations: TranslationRecord<PaymentsTableTranslations> = {
   mn: {
     title: 'Төлбөрийн мэдээлэл',
     description: 'Тайлбар',
@@ -218,9 +237,9 @@ export const paymentsTableTranslations: Record<Language, PaymentsTableTranslatio
     pendingAmount: 'Pending Amount',
     semesterFee: 'Semester Tuition Fee',
   },
-};
+} as const;
 
-export const studentProfileTranslations: Record<Language, StudentProfileTranslations> = {
+export const studentProfileTranslations: TranslationRecord<StudentProfileTranslations> = {
   mn: {
     profile: 'Оюутны мэдээлэл',
     studentId: 'Оюутны дугаар',
@@ -243,9 +262,9 @@ export const studentProfileTranslations: Record<Language, StudentProfileTranslat
     semester: 'Semester',
     yearSuffix: 'year',
   },
-};
+} as const;
 
-export const topHeaderTranslations: Record<Language, TopHeaderTranslations> = {
+export const topHeaderTranslations: TranslationRecord<TopHeaderTranslations> = {
   mn: {
     schoolName: 'Шинэ Монгол технологийн коллеж',
     semester: '2025-2026, Намар',
@@ -258,16 +277,54 @@ export const topHeaderTranslations: Record<Language, TopHeaderTranslations> = {
     student: 'Student',
     notifications: 'Notifications',
   },
-};
+} as const;
+
+// =============================================================================
+// HELPER FUNCTIONS
+// =============================================================================
+
+/** Color mapping for payment status (Ant Design tag colors) */
+const PAYMENT_STATUS_COLORS: Record<PaymentStatus, string> = {
+  paid: 'green',
+  pending: 'orange',
+  overdue: 'red',
+} as const;
 
 /**
- * Helper to get payment status color for Ant Design Tag
+ * Get the Ant Design tag color for a payment status
+ * @param status - The payment status
+ * @returns Ant Design color string
  */
-export const getPaymentStatusColor = (status: 'paid' | 'pending' | 'overdue'): string => {
-  const colors = {
-    paid: 'green',
-    pending: 'orange',
-    overdue: 'red',
-  };
-  return colors[status];
+export const getPaymentStatusColor = (status: PaymentStatus): string => {
+  return PAYMENT_STATUS_COLORS[status];
 };
+
+// =============================================================================
+// UNIFIED TRANSLATION ACCESSOR
+// =============================================================================
+
+/** All available translation namespaces */
+export interface AllTranslations {
+  common: CommonTranslations;
+  paymentStatus: PaymentStatusTranslations;
+  grades: GradesTranslations;
+  calendar: CalendarTranslations;
+  paymentsTable: PaymentsTableTranslations;
+  studentProfile: StudentProfileTranslations;
+  topHeader: TopHeaderTranslations;
+}
+
+/**
+ * Get all translations for a specific language
+ * @param language - Target language code
+ * @returns All translation namespaces for the language
+ */
+export const getTranslations = (language: Language): AllTranslations => ({
+  common: commonTranslations[language],
+  paymentStatus: paymentStatusTranslations[language],
+  grades: gradesTranslations[language],
+  calendar: calendarTranslations[language],
+  paymentsTable: paymentsTableTranslations[language],
+  studentProfile: studentProfileTranslations[language],
+  topHeader: topHeaderTranslations[language],
+});
