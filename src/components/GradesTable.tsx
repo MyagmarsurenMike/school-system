@@ -5,6 +5,7 @@ import { Card, Table } from 'antd';
 import { TrophyOutlined } from '@ant-design/icons';
 import { Grade, Language } from '@/types';
 import { GradeTag } from '@/components/common';
+import { gradesTranslations } from '@/constants/translations';
 import type { ColumnsType } from 'antd/es/table';
 
 interface GradesTableProps {
@@ -12,33 +13,8 @@ interface GradesTableProps {
   language: Language;
 }
 
-const translations = {
-  mn: {
-    title: 'Үнэлгээний хүснэгт',
-    courseCode: 'Код',
-    courseName: 'Багш',
-    credits: 'Кредит',
-    grade: 'Үнэлгээ',
-    gradePoint: 'Оноо',
-    totalCourses: 'Хичээл',
-    totalCredits: 'Нийт кредит',
-    avgGrade: 'Дундаж',
-  },
-  en: {
-    title: 'Grade Report',
-    courseCode: 'Code',
-    courseName: 'Instructor',
-    credits: 'Credits',
-    grade: 'Grade',
-    gradePoint: 'Points',
-    totalCourses: 'Courses',
-    totalCredits: 'Total Credits',
-    avgGrade: 'Average',
-  },
-};
-
 export default function GradesTable({ grades, language }: GradesTableProps) {
-  const t = translations[language];
+  const t = gradesTranslations[language];
 
   const totalCredits = grades.reduce((sum, grade) => sum + grade.credits, 0);
   const avgGPA = grades.reduce((sum, grade) => sum + grade.gradePoint * grade.credits, 0) / totalCredits;

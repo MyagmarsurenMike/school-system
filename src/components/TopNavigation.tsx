@@ -1,23 +1,16 @@
 'use client';
 
 import React from 'react';
-import { Button, Select, Menu, Input } from 'antd';
+import { Button, Select, Input } from 'antd';
 import { 
-  HomeOutlined,
-  CalendarOutlined,
-  UserOutlined,
-  DollarOutlined,
-  FormOutlined,
-  BookOutlined,
-  ClockCircleOutlined,
-  FileTextOutlined,
-  QuestionCircleOutlined,
   SearchOutlined,
   GlobalOutlined,
   LogoutOutlined,
   PieChartFilled
 } from '@ant-design/icons';
-import { Language } from '@/types';
+import { Language, UserRole } from '@/types';
+import { navigationTranslations } from '@/constants/navigation';
+import { commonTranslations } from '@/constants/translations';
 
 interface TopNavigationProps {
   language: Language;
@@ -25,38 +18,31 @@ interface TopNavigationProps {
   onMenuClick?: (key: string) => void;
   onLanguageChange: (language: Language) => void;
   userName: string;
-  userRole?: 'student' | 'teacher' | 'finance';
+  userRole?: UserRole;
 }
 
-const translations = {
-  mn: {
-    home: 'Нүүр',
-    calendar: 'Календарь',
-    studentInfo: 'Оюутны мэдээлэл',
-    payments: 'Төлбөр',
-    surveys: 'Судалгаа',
-    lessons: 'Хичээл',
-    schedules: 'Хуваарь',
-    definitions: 'Тодорхойлолт',
-    guides: 'Заавар',
-    search: 'Хайх...',
-    logout: 'Гарах',
-    welcome: 'Тавтай морил',
-  },
-  en: {
-    home: 'Home',
-    calendar: 'Calendar',
-    studentInfo: 'Student Info',
-    payments: 'Payments',
-    surveys: 'Surveys',
-    lessons: 'Lessons',
-    schedules: 'Schedules',
-    definitions: 'Definitions',
-    guides: 'Guides',
-    search: 'Search...',
-    logout: 'Logout',
-    welcome: 'Welcome',
-  },
+/** Portal title translations */
+const portalTitles: Record<UserRole, Record<Language, string>> = {
+  student: { mn: 'Оюутны систем', en: 'Student Portal' },
+  teacher: { mn: 'Багшийн систем', en: 'Teacher Portal' },
+  finance: { mn: 'Санхүүгийн систем', en: 'Finance Portal' },
+  admin: { mn: 'Админ систем', en: 'Admin Portal' },
+};
+
+/** Role-based gradient colors */
+const roleColors: Record<UserRole, string> = {
+  student: 'from-blue-600 to-indigo-600',
+  teacher: 'from-purple-600 to-indigo-600',
+  finance: 'from-green-600 to-teal-600',
+  admin: 'from-red-600 to-orange-600',
+};
+
+/** Role-based icons */
+const roleIcons: Record<UserRole, React.ReactNode> = {
+  student: '🎓',
+  teacher: '👨‍🏫',
+  finance: <PieChartFilled className="text-2xl" />,
+  admin: '⚙️',
 };
 
 export default function TopNavigation({ 
@@ -67,41 +53,8 @@ export default function TopNavigation({
   userName,
   userRole = 'student' 
 }: TopNavigationProps) {
-  const t = translations[language];
-
-  const getRoleColor = () => {
-    switch (userRole) {
-      case 'teacher':
-        return 'from-purple-600 to-indigo-600';
-      case 'finance':
-        return 'from-green-600 to-teal-600';
-      default:
-        return 'from-blue-600 to-indigo-600';
-    }
-  };
-
-  const getRoleIcon = () => {
-    switch (userRole) {
-      case 'teacher':
-        return '👨‍🏫';
-      case 'finance':
-        return <PieChartFilled className="text-2xl" />;
-      default:
-        return '🎓';
-    }
-  };
-
-  const menuItems = [
-    { key: 'home', icon: <HomeOutlined />, label: t.home },
-    { key: 'calendar', icon: <CalendarOutlined />, label: t.calendar },
-    { key: 'student-info', icon: <UserOutlined />, label: t.studentInfo },
-    { key: 'payments', icon: <DollarOutlined />, label: t.payments },
-    { key: 'surveys', icon: <FormOutlined />, label: t.surveys },
-    { key: 'lessons', icon: <BookOutlined />, label: t.lessons },
-    { key: 'schedules', icon: <ClockCircleOutlined />, label: t.schedules },
-    { key: 'definitions', icon: <FileTextOutlined />, label: t.definitions },
-    { key: 'guides', icon: <QuestionCircleOutlined />, label: t.guides },
-  ];
+  const nav = navigationTranslations[language];
+  const common = commonTranslations[language];
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
@@ -109,47 +62,25 @@ export default function TopNavigation({
         <div className="flex items-center justify-between h-16">
           {/* Logo and Title */}
           <div className="flex items-center space-x-3">
-            <div className={`w-12 h-12 bg-gradient-to-br ${getRoleColor()} rounded-lg flex items-center justify-center shadow-md`}>
-              <span className="text-2xl">{getRoleIcon()}</span>
+            <div className={`w-12 h-12 bg-gradient-to-br ${roleColors[userRole]} rounded-lg flex items-center justify-center shadow-md`}>
+              <span className="text-2xl">{roleIcons[userRole]}</span>
             </div>
             <div className="flex flex-col">
               <h1 className="text-lg font-bold text-gray-900">
-                {userRole === 'teacher' 
-                  ? (language === 'mn' ? 'Багшийн систем' : 'Teacher Portal')
-                  : userRole === 'finance'
-                  ? (language === 'mn' ? 'Санхүүгийн систем' : 'Finance Portal')
-                  : (language === 'mn' ? 'Оюутны систем' : 'Student Portal')}
+                {portalTitles[userRole][language]}
               </h1>
               <span className="text-xs text-gray-500">{userName}</span>
             </div>
           </div>
 
-          {/* Show search and menu only for student role */}
+          {/* Show search only for student role */}
           {userRole === 'student' && (
-            <>
-              {/* Search Input */}
-              <Input
-                prefix={<SearchOutlined className="text-gray-400" />}
-                placeholder={t.search}
-                className="w-80 rounded-lg"
-                size="middle"
-              />
-
-              {/* Menu */}
-              {activeKey && onMenuClick && (
-                <Menu
-                  mode="horizontal"
-                  selectedKeys={[activeKey]}
-                  onClick={({ key }) => onMenuClick(key)}
-                  items={menuItems}
-                  className="flex-1 border-none justify-end"
-                  style={{ 
-                    lineHeight: '64px',
-                    minWidth: 'auto',
-                  }}
-                />
-              )}
-            </>
+            <Input
+              prefix={<SearchOutlined className="text-gray-400" />}
+              placeholder={common.search}
+              className="w-80 rounded-lg"
+              size="middle"
+            />
           )}
 
           {/* Spacer for non-student roles */}
@@ -172,7 +103,7 @@ export default function TopNavigation({
               icon={<LogoutOutlined />}
               className="text-red-600 hover:text-red-700 hover:bg-red-50"
             >
-              {t.logout}
+              {nav.logout}
             </Button>
           </div>
         </div>

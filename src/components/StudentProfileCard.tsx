@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Card, Avatar, Descriptions, Tag, Progress } from 'antd';
-import { UserOutlined, MailOutlined, PhoneOutlined, TrophyOutlined, IdcardOutlined, BookOutlined } from '@ant-design/icons';
+import { Card, Avatar, Descriptions, Tag } from 'antd';
+import { UserOutlined, MailOutlined, PhoneOutlined, IdcardOutlined, BookOutlined } from '@ant-design/icons';
 import { Student, Language } from '@/types';
+import { studentProfileTranslations } from '@/constants/translations';
 
 interface StudentProfileCardProps {
   student: Student;
@@ -11,31 +12,8 @@ interface StudentProfileCardProps {
   small?: boolean;
 }
 
-const translations = {
-  mn: {
-    profile: 'Оюутны мэдээлэл',
-    studentId: 'Оюутны дугаар',
-    major: 'Мэргэжил',
-    year: 'Курс',
-    gpa: 'Голч дүн',
-    email: 'И-мэйл',
-    phone: 'Утас',
-    semester: 'Улирал',
-  },
-  en: {
-    profile: 'Student Profile',
-    studentId: 'Student ID',
-    major: 'Major',
-    year: 'Year',
-    gpa: 'GPA',
-    email: 'Email',
-    phone: 'Phone',
-    semester: 'Semester',
-  },
-};
-
 export default function StudentProfileCard({ student, language, small = false }: StudentProfileCardProps) {
-  const t = translations[language];
+  const t = studentProfileTranslations[language];
   const gpaPercentage = (student.gpa / 4.0) * 100;
 
   return (
@@ -55,7 +33,7 @@ export default function StudentProfileCard({ student, language, small = false }:
         </div>
         <Tag color="blue" className="font-medium">
           <BookOutlined className="mr-1" />
-          {student.year} {language === 'mn' ? 'курс' : 'year'}
+          {student.year} {t.yearSuffix}
         </Tag>
       </div>
 

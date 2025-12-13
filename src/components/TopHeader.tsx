@@ -1,23 +1,16 @@
 'use client';
 
 import React from 'react';
-import { Menu, Avatar, Dropdown, Space, Switch } from 'antd';
+import { Avatar, Dropdown, Space } from 'antd';
 import {
-  HomeOutlined,
-  CalendarOutlined,
   UserOutlined,
-  DollarOutlined,
-  FormOutlined,
-  BookOutlined,
-  ClockCircleOutlined,
-  FileTextOutlined,
-  QuestionCircleOutlined,
+  CalendarOutlined,
   DownOutlined,
   BellOutlined,
   SettingOutlined,
-  GlobalOutlined,
 } from '@ant-design/icons';
 import { Language } from '@/types';
+import { topHeaderTranslations, commonTranslations } from '@/constants/translations';
 
 interface TopHeaderProps {
   language: Language;
@@ -27,45 +20,15 @@ interface TopHeaderProps {
   studentName: string;
 }
 
-const translations = {
-  mn: {
-    home: 'Нүүр хуудас',
-    calendar: 'Сургалтын хуваарь',
-    studentInfo: 'Миний мэдээлэл',
-    payments: 'Төлбөрийн мэдээлэл',
-    surveys: 'Судалгаа',
-    lessons: 'Судалгаа',
-    schedules: 'Сургалт',
-    definitions: 'Цахим сургалт',
-    guides: 'Хэтэч',
-    schoolName: 'Шинэ Монгол технологийн коллеж',
-    semester: '2025-2026, Намар',
-    darkMode: 'Харанхуй горим',
-  },
-  en: {
-    home: 'Home',
-    calendar: 'Schedule',
-    studentInfo: 'My Info',
-    payments: 'Payments',
-    surveys: 'Survey',
-    lessons: 'Study',
-    schedules: 'Training',
-    definitions: 'E-Learning',
-    guides: 'Support',
-    schoolName: 'Shine Mongol Technology College',
-    semester: '2025-2026, Fall',
-    darkMode: 'Dark Mode',
-  },
-};
-
 export default function TopHeader({ language, activeKey, onMenuClick, onLanguageChange, studentName }: TopHeaderProps) {
-  const t = translations[language];
+  const t = topHeaderTranslations[language];
+  const common = commonTranslations[language];
 
   const userMenuItems = [
-    { key: 'profile', label: language === 'mn' ? 'Профайл' : 'Profile', icon: <UserOutlined /> },
-    { key: 'settings', label: language === 'mn' ? 'Тохиргоо' : 'Settings', icon: <SettingOutlined /> },
+    { key: 'profile', label: common.profile, icon: <UserOutlined /> },
+    { key: 'settings', label: common.settings, icon: <SettingOutlined /> },
     { type: 'divider' as const },
-    { key: 'logout', label: language === 'mn' ? 'Гарах' : 'Logout', danger: true },
+    { key: 'logout', label: common.logout, danger: true },
   ];
 
   return (
@@ -78,7 +41,7 @@ export default function TopHeader({ language, activeKey, onMenuClick, onLanguage
               <span className="text-white font-bold text-xl">О</span>
             </div>
             <div className="flex flex-col">
-              <h1 className="text-lg font-bold text-gray-900">{language === 'mn' ? 'Оюутан' : 'Student'}</h1>
+              <h1 className="text-lg font-bold text-gray-900">{t.student}</h1>
             </div>
           </div>
         </div>

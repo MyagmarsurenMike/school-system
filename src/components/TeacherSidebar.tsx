@@ -1,39 +1,39 @@
+'use client';
+
 import React from 'react';
 import { Menu } from 'antd';
 import {
-  DashboardOutlined,
   BookOutlined,
   EditOutlined,
   CloudUploadOutlined,
   SettingOutlined,
   LogoutOutlined,
   HomeOutlined,
+  TeamOutlined,
 } from '@ant-design/icons';
+import Link from 'next/link';
+import { Language } from '@/types';
+import { navigationTranslations } from '@/constants/navigation';
 
 interface TeacherSidebarProps {
   activeKey: string;
   onMenuClick: (key: string) => void;
+  language?: Language;
 }
 
-const translations = {
-  mn: {
-    dashboard: 'Нүүр',
-    myCourses: 'Миний хичээлүүд',
-    gradeEntry: 'Үнэлгээ оруулах',
-    uploadLecture: 'Хичээл байршуулах',
-    settings: 'Тохиргоо',
-    logout: 'Гарах',
-  },
-};
-
-export default function TeacherSidebar({ activeKey, onMenuClick }: TeacherSidebarProps) {
-  const t = translations['mn'];
+export default function TeacherSidebar({ activeKey, onMenuClick, language = 'mn' }: TeacherSidebarProps) {
+  const t = navigationTranslations[language];
 
   const menuItems = [
     { key: 'dashboard', icon: <HomeOutlined />, label: t.dashboard },
     { key: 'courses', icon: <BookOutlined />, label: t.myCourses },
     { key: 'grades', icon: <EditOutlined />, label: t.gradeEntry },
     { key: 'upload', icon: <CloudUploadOutlined />, label: t.uploadLecture },
+    { 
+      key: 'students', 
+      icon: <TeamOutlined />, 
+      label: <Link href="/teacher/student-manager">{t.studentManager}</Link> 
+    },
     { key: 'settings', icon: <SettingOutlined />, label: t.settings },
     { type: 'divider' as const },
     { key: 'logout', icon: <LogoutOutlined />, label: t.logout, danger: true },

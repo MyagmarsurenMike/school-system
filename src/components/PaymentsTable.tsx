@@ -5,6 +5,7 @@ import { Table } from 'antd';
 import { Payment, Language } from '@/types';
 import { formatMoney } from '@/utils';
 import { PaymentStatusTag } from '@/components/common/PaymentStatusTag';
+import { paymentsTableTranslations } from '@/constants/translations';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 
@@ -13,31 +14,8 @@ interface PaymentsTableProps {
   language: Language;
 }
 
-const translations = {
-  mn: {
-    title: 'Төлбөрийн мэдээлэл',
-    description: 'Тайлбар',
-    amount: 'Дүн',
-    dueDate: 'Хугацаа',
-    paidDate: 'Төлсөн огноо',
-    status: 'Төлөв',
-    paid: 'Төлсөн',
-    total: 'Нийт',
-  },
-  en: {
-    title: 'Payment Information',
-    description: 'Description',
-    amount: 'Amount',
-    dueDate: 'Due Date',
-    paidDate: 'Paid Date',
-    status: 'Status',
-    paid: 'Paid',
-    total: 'Total',
-  },
-};
-
 export default function PaymentsTable({ payments, language }: PaymentsTableProps) {
-  const t = translations[language];
+  const t = paymentsTableTranslations[language];
 
   const columns: ColumnsType<Payment> = [
     {
@@ -92,46 +70,44 @@ export default function PaymentsTable({ payments, language }: PaymentsTableProps
 
   return (
     <div>
-        <div className="p-6 rounded-lg bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 bg-[length:200%_200%] animate-fade-bg text-white mb-6 shadow-md">
-            {/* Header */}
-            <div className="mb-4">
-                <div className="text-xl">
-                    2025-2026 оны Намар-н хичээлийн жилийн сургалтын төлбөр
-                </div>
-                <div className="text-2xl font-bold mt-1">
-                    {formatMoney(totalAmount)}
-                </div>
-            </div>
-
-            {/* Row with 4 columns */}
-            <div className="grid grid-cols-4 text-xl divide-x divide-white">
-                <div className="px-2">
-                    <div className="opacity-80">Эхний үлдэгдэл</div>
-                <div className="font-bold">{formatMoney(0)}</div>
-                </div>
-                <div className="px-2">
-                    <div className="opacity-80">Хөнгөлөлт</div>
-                <div className="font-bold">{formatMoney(0)}</div>
-                </div>
-                <div className="px-2">
-                    <div className="opacity-80">Төлсөн</div>
-                <div className="font-bold">{formatMoney(paidAmount)}</div>
-                </div>
-                <div className="px-2">
-                    <div className="opacity-80">Дутуу төлбөр</div>
-                    <div className="font-bold">{formatMoney(pendingAmount)}</div>
-                </div>
-            </div>
+      <div className="p-6 rounded-lg bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 bg-[length:200%_200%] animate-fade-bg text-white mb-6 shadow-md">
+        <div className="mb-4">
+          <div className="text-xl">
+            2025-2026 {language === 'mn' ? 'оны Намар-н хичээлийн жилийн сургалтын төлбөр' : 'Fall Semester Tuition Fee'}
+          </div>
+          <div className="text-2xl font-bold mt-1">
+            {formatMoney(totalAmount)}
+          </div>
         </div>
 
-        <Table
-            className='bg-white rounded-lg shadow-sm py-4 px-4'
-            columns={columns}
-            dataSource={payments}
-            rowKey="id"
-            pagination={false}
-            size="middle"
-        />
+        <div className="grid grid-cols-4 text-xl divide-x divide-white">
+          <div className="px-2">
+            <div className="opacity-80">{t.initialBalance}</div>
+            <div className="font-bold">{formatMoney(0)}</div>
+          </div>
+          <div className="px-2">
+            <div className="opacity-80">{t.discount}</div>
+            <div className="font-bold">{formatMoney(0)}</div>
+          </div>
+          <div className="px-2">
+            <div className="opacity-80">{t.paidAmount}</div>
+            <div className="font-bold">{formatMoney(paidAmount)}</div>
+          </div>
+          <div className="px-2">
+            <div className="opacity-80">{t.pendingAmount}</div>
+            <div className="font-bold">{formatMoney(pendingAmount)}</div>
+          </div>
+        </div>
+      </div>
+
+      <Table
+        className='bg-white rounded-lg shadow-sm py-4 px-4'
+        columns={columns}
+        dataSource={payments}
+        rowKey="id"
+        pagination={false}
+        size="middle"
+      />
     </div>
   );
 }

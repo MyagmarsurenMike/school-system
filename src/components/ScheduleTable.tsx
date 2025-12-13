@@ -1,67 +1,22 @@
 'use client';
 
-import React from 'react';
 import { Card, Table, Tag } from 'antd';
 import { Schedule, Language } from '@/types';
 import type { ColumnsType } from 'antd/es/table';
+import { ClockCircleOutlined, HomeOutlined } from '@ant-design/icons';
 import { 
-  ReadOutlined, 
-  ExperimentOutlined, 
-  EditOutlined,
-  ClockCircleOutlined,
-  HomeOutlined 
-} from '@ant-design/icons';
+  scheduleTranslations, 
+  getScheduleTypeStyle, 
+  getScheduleTypeLabel 
+} from '@/constants/schedule';
 
 interface ScheduleTableProps {
   schedules: Schedule[];
   language: Language;
 }
 
-const translations = {
-  mn: {
-    title: 'Долоо хоногийн хуваарь',
-    day: 'Өдөр',
-    courseCode: 'Код',
-    courseName: 'Хичээл',
-    teacher: 'Багш',
-    room: 'Өрөө',
-    time: 'Цаг',
-    type: 'Төрөл',
-    lecture: 'Лекц',
-    lab: 'Лаб',
-    tutorial: 'Дасгал',
-    days: ['Даваа', 'Мягмар', 'Лхагва', 'Пүрэв', 'Баасан', 'Бямба', 'Ням'],
-  },
-  en: {
-    title: 'Weekly Schedule',
-    day: 'Day',
-    courseCode: 'Code',
-    courseName: 'Course',
-    teacher: 'Instructor',
-    room: 'Room',
-    time: 'Time',
-    type: 'Type',
-    lecture: 'Lecture',
-    lab: 'Lab',
-    tutorial: 'Tutorial',
-    days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-  },
-};
-
-const getTypeIcon = (type: string) => {
-  if (type === 'lecture') return <ReadOutlined />;
-  if (type === 'lab') return <ExperimentOutlined />;
-  return <EditOutlined />;
-};
-
-const getTypeColor = (type: string): string => {
-  if (type === 'lecture') return 'blue';
-  if (type === 'lab') return 'green';
-  return 'orange';
-};
-
 export default function ScheduleTable({ schedules, language }: ScheduleTableProps) {
-  const t = translations[language];
+  const t = scheduleTranslations[language];
 
   const columns: ColumnsType<Schedule> = [
     {
@@ -124,11 +79,11 @@ export default function ScheduleTable({ schedules, language }: ScheduleTableProp
       key: 'type',
       width: 110,
       align: 'center',
-      render: (type: string) => {
-        const typeLabel = type === 'lecture' ? t.lecture : type === 'lab' ? t.lab : t.tutorial;
+      render: (type: 'lecture' | 'lab' | 'tutorial') => {
+        const style = getScheduleTypeStyle(type);
         return (
-          <Tag icon={getTypeIcon(type)} color={getTypeColor(type)} className="font-medium">
-            {typeLabel}
+          <Tag icon={style.icon} color={style.color} className="font-medium">
+            {getScheduleTypeLabel(type, language)}
           </Tag>
         );
       },
@@ -137,7 +92,7 @@ export default function ScheduleTable({ schedules, language }: ScheduleTableProp
 
   return (
     <Card
-      title={<span className="text-lg font-bold text-gray-900">{t.title}</span>}
+      title={<span className="text-lg font-bold text-gray-900">{t.weekly}</span>}
       className="shadow-sm hover:shadow-md transition-shadow border border-gray-200 rounded-xl"
     >
       <Table

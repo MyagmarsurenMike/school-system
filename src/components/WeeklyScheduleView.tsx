@@ -1,91 +1,209 @@
 'use client';
 
-import { Card, Tabs } from 'antd';
-import { Schedule, Language } from '@/types';
+import { useState, useMemo } from 'react';
+import { Card, Tabs, Select, Button, message } from 'antd';
+import { FilterOutlined, ClearOutlined } from '@ant-design/icons';
+import { Schedule, Language, UserRole } from '@/types';
+import { ScheduleGrid, ScheduleFormModal, ScheduleFormValues } from '@/components/common';
 import GradesTable from './GradesTable';
 import { mockGrades } from '@/data/mockData';
+import { 
+  scheduleTranslations, 
+  COURSE_OPTIONS, 
+  getCourseSelectOptions,
+  getClassTimeSelectOptions,
+  getYearSelectOptions,
+  ClassTimeType,
+  YearType
+} from '@/constants/schedule';
 
-interface WeeklyScheduleViewProps {
-  schedules: Schedule[];
-  language: Language;
+/** Extended Schedule interface with classTime and year fields */
+export interface ExtendedSchedule extends Schedule {
+  classTime?: ClassTimeType;
+  year?: YearType;
 }
 
-const titles = {
-  weekly: 'Хичээлийн хуваарь',
-  gradetable: 'Дүнгийн хүснэгт',
-  attendance: 'Судалгаа',
-  days: ['Даваа', 'Мягмар', 'Лхагва', 'Пүрэв', 'Баасан'],
-};
+export interface WeeklyScheduleViewProps {
+  schedules: ExtendedSchedule[];
+  language: Language;
+  userRole?: UserRole;
+  onScheduleUpdate?: (schedules: ExtendedSchedule[]) => void;
+}
 
-const timeSlots = [
-  '08:00', '09:40', '11:20', '13:00', '14:40', '16:20', '18:00', '19:40',
-];
+/**
+ * Weekly schedule view with tabs for schedule grid and grades table
+ * Supports editing for teacher role and filtering by course/class time/year
+ */
+export default function WeeklyScheduleView({ 
+  schedules: initialSchedules, 
+  language, 
+  userRole = 'student',
+  onScheduleUpdate 
+}: WeeklyScheduleViewProps) {
+  const [schedules, setSchedules] = useState<ExtendedSchedule[]>(initialSchedules);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null);
+  const [selectedCell, setSelectedCell] = useState<{ day: number; time: string } | null>(null);
+  
+  // Filter states
+  const [filterCourse, setFilterCourse] = useState<string | null>(null);
+  const [filterClassTime, setFilterClassTime] = useState<ClassTimeType | null>(null);
+  const [filterYear, setFilterYear] = useState<YearType | null>(null);
 
-export default function WeeklyScheduleView({ schedules, language }: WeeklyScheduleViewProps) {
-  function getScheduleForSlot(day: number, time: string) {
-    return schedules.filter(s => s.dayOfWeek === day && s.startTime === time);
-  }
+  const t = scheduleTranslations[language];
+  const canEdit = userRole === 'teacher';
+
+  // Filter schedules based on selected filters
+  const filteredSchedules = useMemo(() => {
+    return schedules.filter(schedule => {
+      if (filterCourse && schedule.courseCode !== filterCourse) return false;
+      if (filterClassTime && schedule.classTime !== filterClassTime) return false;
+      if (filterYear && schedule.year !== filterYear) return false;
+      return true;
+    });
+  }, [schedules, filterCourse, filterClassTime, filterYear]);
+
+  // Check if any filters are active
+  const hasActiveFilters = filterCourse || filterClassTime || filterYear;
+
+  // Clear all filters
+  const handleClearFilters = () => {
+    setFilterCourse(null);
+    setFilterClassTime(null);
+    setFilterYear(null);
+  };
+
+  const handleEmptyCellClick = (day: number, time: string) => {
+    if (!canEdit) return;
+    setSelectedCell({ day, time });
+    setEditingSchedule(null);
+    setIsModalOpen(true);
+  };
+
+  const handleScheduleClick = (schedule: Schedule, day: number, time: string) => {
+    if (!canEdit) return;
+    setSelectedCell({ day, time });
+    setEditingSchedule(schedule);
+    setIsModalOpen(true);
+  };
+
+  const handleSave = (values: ScheduleFormValues, isEdit: boolean) => {
+    const selectedCourse = COURSE_OPTIONS.find(c => c.value === values.courseCode);
+    
+    const scheduleData: ExtendedSchedule = {
+      id: editingSchedule?.id || `schedule-${Date.now()}`,
+      courseCode: values.courseCode,
+      courseName: selectedCourse?.label.split(' - ')[1] || values.courseName || '',
+      courseNameEn: selectedCourse?.labelEn.split(' - ')[1] || values.courseNameEn || values.courseCode,
+      teacher: values.teacher,
+      room: values.room,
+      dayOfWeek: selectedCell?.day || 1,
+      startTime: values.startTime.format('HH:mm'),
+      endTime: values.endTime.format('HH:mm'),
+      type: values.type,
+      classTime: filterClassTime || undefined,
+    };
+
+    let newSchedules: ExtendedSchedule[];
+    
+    if (isEdit && editingSchedule) {
+      newSchedules = schedules.map(s => 
+        s.id === editingSchedule.id ? scheduleData : s
+      );
+      message.success(t.updateSuccess);
+    } else {
+      newSchedules = [...schedules, scheduleData];
+      message.success(t.saveSuccess);
+    }
+
+    setSchedules(newSchedules);
+    onScheduleUpdate?.(newSchedules);
+    setIsModalOpen(false);
+  };
+
+  const handleDelete = (schedule: Schedule) => {
+    const newSchedules = schedules.filter(s => s.id !== schedule.id);
+    setSchedules(newSchedules);
+    onScheduleUpdate?.(newSchedules);
+    setIsModalOpen(false);
+    message.success(t.deleteSuccess);
+  };
+
+  // Filter toolbar component
+  const FilterToolbar = () => (
+    <div className="flex items-center gap-4 p-4 bg-gray-50 border-b border-gray-200">
+      <div className="flex items-center gap-2 text-gray-600">
+        <FilterOutlined />
+        <span className="font-medium">{t.filters}:</span>
+      </div>
+      
+      <Select
+        allowClear
+        placeholder={t.allYears}
+        value={filterYear}
+        onChange={setFilterYear}
+        options={getYearSelectOptions(language)}
+        className="w-32"
+        size="middle"
+      />
+
+      <Select
+        allowClear
+        placeholder={t.allCourses}
+        value={filterCourse}
+        onChange={setFilterCourse}
+        options={getCourseSelectOptions(language)}
+        className="w-64"
+        size="middle"
+      />
+      
+      <Select
+        allowClear
+        placeholder={t.allClassTimes}
+        value={filterClassTime}
+        onChange={setFilterClassTime}
+        options={getClassTimeSelectOptions(language)}
+        className="w-32"
+        size="middle"
+      />
+
+      {hasActiveFilters && (
+        <Button 
+          type="text" 
+          icon={<ClearOutlined />} 
+          onClick={handleClearFilters}
+          className="text-gray-500 hover:text-red-500"
+        >
+          {t.clearFilters}
+        </Button>
+      )}
+
+      <div className="ml-auto text-sm text-gray-500">
+        {filteredSchedules.length} / {schedules.length}
+      </div>
+    </div>
+  );
 
   const tabItems = [
     {
       key: '1',
-      label: titles.weekly,
+      label: t.weekly,
       children: (
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse min-w-[800px] table-fixed">
-            <thead>
-              <tr>
-          <th className="border border-gray-200 bg-gray-50 p-2 w-20 text-xs font-semibold text-gray-600"></th>
-          {titles.days.map((day, index) => (
-            <th key={index} className="border border-gray-200 bg-gray-50 p-2 text-sm font-semibold text-gray-700">
-              {day}
-            </th>
-          ))}
-              </tr>
-            </thead>
-            <tbody>
-              {timeSlots.map((time, timeIndex) => (
-          <tr key={timeIndex}>
-            <td className="border border-gray-200 bg-gray-50 p-2 text-xs text-gray-600 text-center font-medium">
-              {time}
-            </td>
-            {[1, 2, 3, 4, 5].map((day, dayIndex) => {
-              const scheduleItems = getScheduleForSlot(day, time);
-              return (
-                <td key={dayIndex} className="border border-gray-200 p-1 align-top">
-            {scheduleItems.map((schedule, idx) => (
-              <div
-                key={idx}
-                className={`p-2 rounded text-xs mb-1 wrap-break-word ${
-                  schedule.type === 'lecture'
-              ? 'bg-purple-100 text-purple-800'
-              : schedule.type === 'lab'
-              ? 'bg-blue-100 text-blue-800'
-              : 'bg-orange-100 text-orange-800'
-                }`}
-              >
-                <div className="font-semibold">{schedule.courseCode}</div>
-                <div className="truncate">
-                  {language === 'mn' ? schedule.courseName : schedule.courseNameEn}
-                </div>
-                <div className="text-[10px] mt-1">
-                  {language === 'mn' ? `${schedule.room}(${schedule.teacher.split(' ')[0]})` : schedule.room}
-                </div>
-              </div>
-            ))}
-                </td>
-              );
-            })}
-          </tr>
-              ))}
-            </tbody>
-          </table>
+        <div>
+          {canEdit && <FilterToolbar />}
+          <ScheduleGrid
+            schedules={filteredSchedules}
+            language={language}
+            editable={canEdit}
+            onEmptyCellClick={handleEmptyCellClick}
+            onScheduleClick={handleScheduleClick}
+          />
         </div>
       ),
     },
     {
       key: '2',
-      label: titles.gradetable,
+      label: t.gradeTable,
       children: (
         <div className="p-4">
           <GradesTable grades={mockGrades} language={language} />
@@ -95,8 +213,20 @@ export default function WeeklyScheduleView({ schedules, language }: WeeklySchedu
   ];
 
   return (
-    <Card className="shadow-sm border border-gray-200 rounded-lg" styles={{ body: { padding: '0' } }}>
-      <Tabs defaultActiveKey="1" items={tabItems} className="schedule-tabs" />
-    </Card>
+    <>
+      <Card className="shadow-sm border border-gray-200 rounded-lg" styles={{ body: { padding: '0' } }}>
+        <Tabs defaultActiveKey="1" items={tabItems} className="schedule-tabs" />
+      </Card>
+
+      <ScheduleFormModal
+        open={isModalOpen}
+        schedule={editingSchedule}
+        selectedCell={selectedCell}
+        language={language}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSave}
+        onDelete={handleDelete}
+      />
+    </>
   );
 }

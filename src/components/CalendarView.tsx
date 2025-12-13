@@ -4,7 +4,8 @@ import React from 'react';
 import { Card, Calendar as AntCalendar, Badge, Tag, Space, Tooltip } from 'antd';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
-import { CalendarEvent, Language } from '@/types';
+import { CalendarEvent, Language, CalendarEventType } from '@/types';
+import { calendarTranslations } from '@/constants/translations';
 import { 
   FileTextOutlined, 
   AlertOutlined, 
@@ -17,48 +18,48 @@ interface CalendarViewProps {
   language: Language;
 }
 
-const translations = {
-  mn: {
-    title: 'Календарь',
-    exam: 'Шалгалт',
-    assignment: 'Даалгавар',
-    holiday: 'Амралт',
-    event: 'Үйл явдал',
-    upcomingEvents: 'Ирэх үйл явдлууд',
-  },
-  en: {
-    title: 'Academic Calendar',
-    exam: 'Exam',
-    assignment: 'Assignment',
-    holiday: 'Holiday',
-    event: 'Event',
-    upcomingEvents: 'Upcoming Events',
-  },
+const getEventIcon = (type: CalendarEventType) => {
+  const icons: Record<CalendarEventType, React.ReactNode> = {
+    exam: <AlertOutlined />,
+    assignment: <FileTextOutlined />,
+    holiday: <SmileOutlined />,
+    event: <CalendarOutlined />,
+  };
+  return icons[type];
 };
 
-const getEventIcon = (type: string) => {
-  if (type === 'exam') return <AlertOutlined />;
-  if (type === 'assignment') return <FileTextOutlined />;
-  if (type === 'holiday') return <SmileOutlined />;
-  return <CalendarOutlined />;
+const getEventColor = (type: CalendarEventType): 'error' | 'warning' | 'success' | 'processing' => {
+  const colors: Record<CalendarEventType, 'error' | 'warning' | 'success' | 'processing'> = {
+    exam: 'error',
+    assignment: 'warning',
+    holiday: 'success',
+    event: 'processing',
+  };
+  return colors[type];
 };
 
-const getEventColor = (type: string): 'error' | 'warning' | 'success' | 'processing' => {
-  if (type === 'exam') return 'error';
-  if (type === 'assignment') return 'warning';
-  if (type === 'holiday') return 'success';
-  return 'processing';
-};
-
-const getTagColor = (type: string): string => {
-  if (type === 'exam') return 'red';
-  if (type === 'assignment') return 'blue';
-  if (type === 'holiday') return 'yellow';
-  return 'green';
+const getTagColor = (type: CalendarEventType): string => {
+  const colors: Record<CalendarEventType, string> = {
+    exam: 'red',
+    assignment: 'blue',
+    holiday: 'yellow',
+    event: 'green',
+  };
+  return colors[type];
 };
 
 export default function CalendarView({ events, language }: CalendarViewProps) {
-  const t = translations[language];
+  const t = calendarTranslations[language];
+
+  const getEventTypeLabel = (type: CalendarEventType): string => {
+    const labels: Record<CalendarEventType, string> = {
+      exam: t.exam,
+      assignment: t.assignment,
+      holiday: t.holiday,
+      event: t.event,
+    };
+    return labels[type];
+  };
 
   const getListData = (value: Dayjs) => {
     const dateStr = value.format('YYYY-MM-DD');
@@ -122,9 +123,7 @@ export default function CalendarView({ events, language }: CalendarViewProps) {
                 </div>
               </div>
               <Tag color={getTagColor(event.type)} className="ml-2">
-                {event.type === 'exam' ? t.exam : 
-                 event.type === 'assignment' ? t.assignment : 
-                 event.type === 'holiday' ? t.holiday : t.event}
+                {getEventTypeLabel(event.type)}
               </Tag>
             </div>
           ))}

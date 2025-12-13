@@ -58,6 +58,18 @@ export interface Payment {
 
 export type Language = 'mn' | 'en';
 
+/** User role type for permission-based UI */
+export type UserRole = 'student' | 'teacher' | 'admin' | 'finance';
+
+/** Schedule class type */
+export type ScheduleType = 'lecture' | 'lab' | 'tutorial';
+
+/** Payment status type */
+export type PaymentStatus = 'paid' | 'pending' | 'overdue';
+
+/** Calendar event type */
+export type CalendarEventType = 'exam' | 'assignment' | 'holiday' | 'event';
+
 export interface Teacher {
   id: string;
   name: string;
@@ -142,4 +154,32 @@ export interface Subject {
   credit: number;
   teacher: string;
   lectures: CourseLecture[];
+}
+
+// --- STUDENT MANAGEMENT TYPES ---
+
+/** Input type for creating a new student */
+export interface StudentInput {
+  id: string;
+  name: string;
+  nameEn: string;
+  major: string;
+  year: number;
+  email: string;
+  phone: string;
+  semester: string;
+}
+
+/** Input type for assigning a schedule to a student */
+export interface StudentScheduleInput {
+  studentId: string;
+  courseCode: string;
+  courseName: string;
+  courseNameEn: string;
+  teacher: string;
+  room: string;
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+  type: 'lecture' | 'lab' | 'tutorial';
 }
