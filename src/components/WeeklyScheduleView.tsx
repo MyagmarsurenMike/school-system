@@ -131,55 +131,60 @@ export default function WeeklyScheduleView({
 
   // Filter toolbar component
   const FilterToolbar = () => (
-    <div className="flex items-center gap-4 p-4 bg-gray-50 border-b border-gray-200">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 p-3 sm:p-4 bg-gray-50 border-b border-gray-200">
       <div className="flex items-center gap-2 text-gray-600">
-        <FilterOutlined />
-        <span className="font-medium">{t.filters}:</span>
+        <FilterOutlined className="text-sm sm:text-base" />
+        <span className="font-medium text-xs sm:text-sm">{t.filters}:</span>
       </div>
       
-      <Select
-        allowClear
-        placeholder={t.allYears}
-        value={filterYear}
-        onChange={setFilterYear}
-        options={getYearSelectOptions(language)}
-        className="w-32"
-        size="middle"
-      />
+      <div className="flex flex-wrap gap-2 flex-1">
+        <Select
+          allowClear
+          placeholder={t.allYears}
+          value={filterYear}
+          onChange={setFilterYear}
+          options={getYearSelectOptions(language)}
+          className="w-full sm:w-28"
+          size="middle"
+        />
 
-      <Select
-        allowClear
-        placeholder={t.allCourses}
-        value={filterCourse}
-        onChange={setFilterCourse}
-        options={getCourseSelectOptions(language)}
-        className="w-64"
-        size="middle"
-      />
-      
-      <Select
-        allowClear
-        placeholder={t.allClassTimes}
-        value={filterClassTime}
-        onChange={setFilterClassTime}
-        options={getClassTimeSelectOptions(language)}
-        className="w-32"
-        size="middle"
-      />
+        <Select
+          allowClear
+          placeholder={t.allCourses}
+          value={filterCourse}
+          onChange={setFilterCourse}
+          options={getCourseSelectOptions(language)}
+          className="w-full sm:w-48 lg:w-64"
+          size="middle"
+        />
+        
+        <Select
+          allowClear
+          placeholder={t.allClassTimes}
+          value={filterClassTime}
+          onChange={setFilterClassTime}
+          options={getClassTimeSelectOptions(language)}
+          className="w-full sm:w-28"
+          size="middle"
+        />
+      </div>
 
-      {hasActiveFilters && (
-        <Button 
-          type="text" 
-          icon={<ClearOutlined />} 
-          onClick={handleClearFilters}
-          className="text-gray-500 hover:text-red-500"
-        >
-          {t.clearFilters}
-        </Button>
-      )}
+      <div className="flex items-center justify-between sm:justify-end gap-2">
+        {hasActiveFilters && (
+          <Button 
+            type="text" 
+            icon={<ClearOutlined />} 
+            onClick={handleClearFilters}
+            className="text-gray-500 hover:text-red-500 text-xs sm:text-sm"
+            size="small"
+          >
+            <span className="hidden sm:inline">{t.clearFilters}</span>
+          </Button>
+        )}
 
-      <div className="ml-auto text-sm text-gray-500">
-        {filteredSchedules.length} / {schedules.length}
+        <div className="text-xs sm:text-sm text-gray-500">
+          {filteredSchedules.length} / {schedules.length}
+        </div>
       </div>
     </div>
   );
@@ -187,25 +192,27 @@ export default function WeeklyScheduleView({
   const tabItems = [
     {
       key: '1',
-      label: t.weekly,
+      label: <span className="text-xs sm:text-sm">{t.weekly}</span>,
       children: (
         <div>
           {canEdit && <FilterToolbar />}
-          <ScheduleGrid
-            schedules={filteredSchedules}
-            language={language}
-            editable={canEdit}
-            onEmptyCellClick={handleEmptyCellClick}
-            onScheduleClick={handleScheduleClick}
-          />
+          <div className="overflow-x-auto">
+            <ScheduleGrid
+              schedules={filteredSchedules}
+              language={language}
+              editable={canEdit}
+              onEmptyCellClick={handleEmptyCellClick}
+              onScheduleClick={handleScheduleClick}
+            />
+          </div>
         </div>
       ),
     },
     {
       key: '2',
-      label: t.gradeTable,
+      label: <span className="text-xs sm:text-sm">{t.gradeTable}</span>,
       children: (
-        <div className="p-4">
+        <div className="p-2 sm:p-4">
           <GradesTable grades={mockGrades} language={language} />
         </div>
       ),
@@ -214,8 +221,15 @@ export default function WeeklyScheduleView({
 
   return (
     <>
-      <Card className="shadow-sm border border-gray-200 rounded-lg" styles={{ body: { padding: '0' } }}>
-        <Tabs defaultActiveKey="1" items={tabItems} className="schedule-tabs" />
+      <Card 
+        className="shadow-sm border border-gray-200 rounded-lg overflow-hidden" 
+        styles={{ body: { padding: '0' } }}
+      >
+        <Tabs 
+          defaultActiveKey="1" 
+          items={tabItems} 
+          className="schedule-tabs [&_.ant-tabs-nav]:px-2 [&_.ant-tabs-nav]:sm:px-4" 
+        />
       </Card>
 
       <ScheduleFormModal

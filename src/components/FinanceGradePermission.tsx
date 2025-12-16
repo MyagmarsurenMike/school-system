@@ -261,7 +261,7 @@ export default function FinanceGradePermission({ language }: FinanceGradePermiss
       </Card>
 
       {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         <Card>
           <div className="text-center">
             <UnlockOutlined className="text-4xl text-green-500 mb-2" />
@@ -280,7 +280,7 @@ export default function FinanceGradePermission({ language }: FinanceGradePermiss
             </div>
           </div>
         </Card>
-        <Card>
+        <Card >
           <div className="text-center">
             <ThunderboltOutlined className="text-4xl text-cyan-500 mb-2" />
             <div className="text-2xl font-bold text-cyan-600">{autoGrantedCount}</div>
@@ -324,19 +324,21 @@ export default function FinanceGradePermission({ language }: FinanceGradePermiss
       </Card>
 
       {/* Legend */}
-      <Card size="small">
-        <div className="flex flex-wrap items-center gap-4 text-sm">
-          <span className="font-semibold">{language === 'mn' ? 'Тэмдэглэгээ:' : 'Legend:'}</span>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-cyan-50 border border-cyan-200"></div>
-            <span>{language === 'mn' ? '50%+ төлсөн (автомат эрх)' : 'Paid 50%+ (auto-granted)'}</span>
+      <div className='mt-4'>
+        <Card size="small" >
+          <div className="flex flex-wrap items-center gap-4 text-sm">
+            <span className="font-semibold">{language === 'mn' ? 'Тэмдэглэгээ:' : 'Legend:'}</span>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-cyan-50 border border-cyan-200"></div>
+              <span>{language === 'mn' ? '50%+ төлсөн (автомат эрх)' : 'Paid 50%+ (auto-granted)'}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-orange-50 border border-orange-200"></div>
+              <span>{language === 'mn' ? 'Төлбөр дутуу боловч гараар эрх олгосон' : 'Manually granted with partial payment'}</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-orange-50 border border-orange-200"></div>
-            <span>{language === 'mn' ? 'Төлбөр дутуу боловч гараар эрх олгосон' : 'Manually granted with partial payment'}</span>
-          </div>
-        </div>
-      </Card>
+        </Card>      
+      </div>
     </div>
   );
 }

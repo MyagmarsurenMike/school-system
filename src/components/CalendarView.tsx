@@ -58,6 +58,9 @@ const UPCOMING_EVENTS_LIMIT = 5;
 /** Date format for display */
 const DATE_FORMAT = 'YYYY-MM-DD';
 
+/** Short date format for mobile */
+const DATE_FORMAT_SHORT = 'MM-DD';
+
 // =============================================================================
 // HELPER FUNCTIONS
 // =============================================================================
@@ -100,11 +103,15 @@ const EventBadgeItem: React.FC<EventBadgeItemProps> = ({ event, language }) => {
   const title = getEventTitle(event, language);
   
   return (
-    <li className="mb-1">
+    <li className="mb-0.5 sm:mb-1">
       <Tooltip title={title}>
         <Badge 
           status={getEventBadgeStatus(event.type)} 
-          text={<span className="text-xs truncate block">{title}</span>} 
+          text={
+            <span className="text-[0.625rem] sm:text-xs truncate block max-w-12 sm:max-w-20 md:max-w-full">
+              {title}
+            </span>
+          } 
         />
       </Tooltip>
     </li>
@@ -122,19 +129,25 @@ const UpcomingEventCard: React.FC<UpcomingEventCardProps> = ({
   language, 
   typeLabel 
 }) => (
-  <div className="flex items-center justify-between p-2 bg-white rounded border border-gray-200">
-    <div className="flex items-center space-x-3">
-      <span className="text-blue-600">{getEventIcon(event.type)}</span>
-      <div>
-        <div className="font-medium text-gray-900 text-sm">
+  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-2 sm:p-3 bg-white rounded-lg border border-gray-200 gap-2 sm:gap-3 min-h-12 touch-manipulation">
+    <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+      <span className="text-blue-600 text-base sm:text-lg shrink-0">
+        {getEventIcon(event.type)}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="font-medium text-gray-900 text-xs sm:text-sm truncate">
           {getEventTitle(event, language)}
         </div>
-        <div className="text-xs text-gray-500">
-          {dayjs(event.date).format(DATE_FORMAT)}
+        <div className="text-[0.625rem] sm:text-xs text-gray-500">
+          <span className="hidden sm:inline">{dayjs(event.date).format(DATE_FORMAT)}</span>
+          <span className="sm:hidden">{dayjs(event.date).format(DATE_FORMAT_SHORT)}</span>
         </div>
       </div>
     </div>
-    <Tag color={getEventTagColor(event.type)} className="ml-2">
+    <Tag 
+      color={getEventTagColor(event.type)} 
+      className="self-start sm:self-center shrink-0 text-[0.625rem] sm:text-xs px-1.5! sm:px-2! py-0.5!"
+    >
       {typeLabel}
     </Tag>
   </div>
@@ -153,7 +166,7 @@ export default function CalendarView({ events, language }: CalendarViewProps) {
     const dateEvents = getEventsForDate(events, value);
     
     return (
-      <ul className="events m-0 p-0 list-none">
+      <ul className="events m-0 p-0 list-none overflow-hidden">
         {dateEvents.map(event => (
           <EventBadgeItem 
             key={event.id} 
@@ -167,28 +180,57 @@ export default function CalendarView({ events, language }: CalendarViewProps) {
 
   return (
     <Card 
-      className="shadow-sm hover:shadow-md transition-shadow border border-gray-200 rounded-xl"
-      title={<span className="text-lg font-bold text-gray-900">{t.title}</span>}
+      className="shadow-sm hover:shadow-md transition-shadow border border-gray-200 rounded-lg sm:rounded-xl w-full overflow-hidden"
+      title={
+        <span className="text-sm sm:text-base md:text-lg font-bold text-gray-900">
+          {t.title}
+        </span>
+      }
+      styles={{
+        body: {
+          padding: '0.5rem',
+        },
+      }}
+      classNames={{
+        body: 'sm:!p-4 md:!p-6',
+      }}
     >
-      <AntCalendar 
-        cellRender={dateCellRender}
-        className="rounded-lg border border-gray-200"
-      />
+      {/* Calendar wrapper with responsive overflow handling */}
+      <div className="w-full overflow-x-auto -mx-1 px-1 sm:mx-0 sm:px-0">
+        <div className="min-w-[280px] sm:min-w-0">
+          <AntCalendar 
+            cellRender={dateCellRender}
+            className="rounded-lg border border-gray-200 [&_.ant-picker-calendar-date-content]:h-8 [&_.ant-picker-calendar-date-content]:sm:h-12 [&_.ant-picker-calendar-date-content]:md:h-16 [&_.ant-picker-calendar-date-content]:overflow-hidden [&_.ant-picker-cell]:p-0.5 [&_.ant-picker-cell]:sm:p-1"
+            fullscreen={false}
+          />
+        </div>
+      </div>
       
-      <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-        <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
-          <CalendarOutlined className="mr-2 text-blue-600" />
+      {/* Upcoming events section */}
+      <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gray-50 rounded-lg">
+        <h4 className="font-semibold text-gray-900 mb-2 sm:mb-3 flex items-center text-sm sm:text-base">
+          <CalendarOutlined className="mr-1.5 sm:mr-2 text-blue-600" />
           {t.upcomingEvents}
         </h4>
-        <Space direction="vertical" size="small" className="w-full">
-          {upcomingEvents.map(event => (
-            <UpcomingEventCard
-              key={event.id}
-              event={event}
-              language={language}
-              typeLabel={eventTypeLabels[event.type]}
-            />
-          ))}
+        <Space 
+          direction="vertical" 
+          size="small" 
+          className="w-full [&>.ant-space-item]:w-full"
+        >
+          {upcomingEvents.length > 0 ? (
+            upcomingEvents.map(event => (
+              <UpcomingEventCard
+                key={event.id}
+                event={event}
+                language={language}
+                typeLabel={eventTypeLabels[event.type]}
+              />
+            ))
+          ) : (
+            <div className="text-center text-gray-500 text-xs sm:text-sm py-4">
+              {language === 'mn' ? 'Ирэх үйл явдал байхгүй' : 'No upcoming events'}
+            </div>
+          )}
         </Space>
       </div>
     </Card>

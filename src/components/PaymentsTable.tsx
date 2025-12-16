@@ -62,40 +62,49 @@ const createTableColumns = (
   language: Language
 ): ColumnsType<Payment> => [
   {
-    title: t.description,
+    title: <span className="text-xs sm:text-sm">{t.description}</span>,
     dataIndex: 'description',
     key: 'description',
     ellipsis: true,
-  },
-  {
-    title: t.amount,
-    dataIndex: 'amount',
-    key: 'amount',
-    width: 150,
-    align: 'left',
-    render: (amount: number) => (
-      <span className="font-semibold text-blue-600">{formatMoney(amount)}</span>
+    render: (desc: string) => (
+      <span className="text-xs sm:text-sm">{desc}</span>
     ),
   },
   {
-    title: t.dueDate,
+    title: <span className="text-xs sm:text-sm">{t.amount}</span>,
+    dataIndex: 'amount',
+    key: 'amount',
+    width: 100,
+    align: 'left',
+    render: (amount: number) => (
+      <span className="font-semibold text-blue-600 text-xs sm:text-sm">{formatMoney(amount)}</span>
+    ),
+  },
+  {
+    title: <span className="text-xs sm:text-sm hidden sm:inline">{t.dueDate}</span>,
     dataIndex: 'dueDate',
     key: 'dueDate',
-    width: 130,
-    render: formatDate,
+    width: 100,
+    responsive: ['sm'] as const,
+    render: (date: string) => (
+      <span className="text-xs sm:text-sm">{formatDate(date)}</span>
+    ),
   },
   {
-    title: t.paidDate,
+    title: <span className="text-xs sm:text-sm hidden md:inline">{t.paidDate}</span>,
     dataIndex: 'paidDate',
     key: 'paidDate',
-    width: 130,
-    render: formatDate,
+    width: 100,
+    responsive: ['md'] as const,
+    render: (date: string) => (
+      <span className="text-xs sm:text-sm">{formatDate(date)}</span>
+    ),
   },
   {
-    title: t.status,
+    title: <span className="text-xs sm:text-sm">{t.status}</span>,
     dataIndex: 'status',
     key: 'status',
-    width: 120,
+    width: 90,
     align: 'center',
     render: (status: PaymentStatus) => (
       <PaymentStatusTag status={status} language={language} />
@@ -130,17 +139,17 @@ const SummaryHeader: React.FC<SummaryHeaderProps> = ({
   ];
 
   return (
-    <div className="p-6 rounded-lg bg-linear-to-r from-blue-600 via-indigo-500 to-purple-600 bg-size-[200%_200%] animate-fade-bg text-white mb-6 shadow-md">
-      <div className="mb-4">
-        <div className="text-xl">{semesterTitle}</div>
-        <div className="text-2xl font-bold mt-1">{formatMoney(summary.total)}</div>
+    <div className="p-4 sm:p-6 rounded-lg bg-linear-to-r from-blue-600 via-indigo-500 to-purple-600 bg-size-[200%_200%] animate-fade-bg text-white mb-4 sm:mb-6 shadow-md">
+      <div className="mb-3 sm:mb-4">
+        <div className="text-sm sm:text-xl leading-tight">{semesterTitle}</div>
+        <div className="text-xl sm:text-2xl font-bold mt-1">{formatMoney(summary.total)}</div>
       </div>
 
-      <div className="grid grid-cols-4 text-xl divide-x divide-white">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-0 text-sm sm:text-xl sm:divide-x sm:divide-white">
         {summaryItems.map(({ label, value }) => (
-          <div key={label} className="px-2">
-            <div className="opacity-80">{label}</div>
-            <div className="font-bold">{formatMoney(value)}</div>
+          <div key={label} className="px-0 sm:px-2 py-1 sm:py-0">
+            <div className="opacity-80 text-xs sm:text-base">{label}</div>
+            <div className="font-bold text-sm sm:text-xl">{formatMoney(value)}</div>
           </div>
         ))}
       </div>
@@ -166,14 +175,17 @@ export default function PaymentsTable({ payments, language }: PaymentsTableProps
         language={language} 
       />
 
-      <Table
-        className="bg-white rounded-lg shadow-sm py-4 px-4"
-        columns={columns}
-        dataSource={payments}
-        rowKey="id"
-        pagination={false}
-        size="middle"
-      />
+      <div className="overflow-x-auto">
+        <Table
+          className="bg-white rounded-lg shadow-sm py-2 px-2 sm:py-4 sm:px-4 [&_.ant-table-cell]:p-2! [&_.ant-table-cell]:sm:p-3!"
+          columns={columns}
+          dataSource={payments}
+          rowKey="id"
+          pagination={false}
+          size="small"
+          scroll={{ x: 400 }}
+        />
+      </div>
     </div>
   );
 }

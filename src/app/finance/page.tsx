@@ -77,18 +77,6 @@ export default function FinancePage() {
           {/* Main Content */}
           <main className="pt-20 px-6">
             <div className="max-w-7xl mx-auto">
-              {/* Welcome Header */}
-              <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                  {t.welcome}, {t.department}
-                </h1>
-                <p className="text-gray-600">
-                  {language === 'mn' 
-                    ? 'Оюутны төлбөр болон үнэлгээ харах эрхийг удирдах' 
-                    : 'Manage student payments and grade view permissions'}
-                </p>
-              </div>
-
               {/* Tabs */}
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <Tabs defaultActiveKey="payments" items={tabItems} size="large" />

@@ -135,6 +135,7 @@ export interface Payment {
 
 /** Represents student payment permission status */
 export interface StudentPaymentPermission extends BilingualEntity {
+  studentName: any;
   studentId: string;
   paymentStatus: PaymentStatus;
   canViewGrades: boolean;

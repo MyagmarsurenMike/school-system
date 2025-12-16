@@ -16,19 +16,28 @@ import LecturesTab from '@/components/LecturesTab';
 export default function DashboardPage() {
   const [language, setLanguage] = useState<Language>('mn');
   const [activeMenu, setActiveMenu] = useState('home');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleMobileMenuToggle = () => {
+    setMobileMenuOpen(prev => !prev);
+  };
+
+  const handleMobileMenuClose = () => {
+    setMobileMenuOpen(false);
+  };
 
   const renderContent = () => {
     switch (activeMenu) {
       case 'home':
         return (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
             {/* Left Column - Profile and Grades */}
             <div className="lg:col-span-8">
               <WeeklyScheduleView schedules={mockSchedules} language={language} />
             </div>
 
             {/* Right Column - Weekly Schedule (Full Height) */}
-            <div className="lg:col-span-4 space-y-8">
+            <div className="lg:col-span-4 space-y-4 sm:space-y-8">
               <StudentProfileCard student={mockStudent} language={language} />
 
               <GradesTable grades={mockGrades} language={language} />
@@ -41,7 +50,7 @@ export default function DashboardPage() {
       
       case 'student-info':
         return (
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6'>
                 <div className="md:col-span-1">
                     <StudentProfileCard student={mockStudent} language={language} small />
                 </div>
@@ -90,6 +99,7 @@ export default function DashboardPage() {
           onMenuClick={setActiveMenu}
           onLanguageChange={setLanguage}
           studentName={language === 'mn' ? mockStudent.name : mockStudent.nameEn}
+          onMobileMenuToggle={handleMobileMenuToggle}
         />
 
         {/* Left Sidebar */}
@@ -97,10 +107,12 @@ export default function DashboardPage() {
           language={language}
           activeKey={activeMenu}
           onMenuClick={setActiveMenu}
+          mobileOpen={mobileMenuOpen}
+          onMobileClose={handleMobileMenuClose}
         />
         
-        {/* Main Content */}
-        <main className="ml-52 mt-16 p-6">
+        {/* Main Content - Responsive margin */}
+        <main className="md:ml-52 mt-14 sm:mt-16 p-3 sm:p-6">
           <div className="max-w-[1600px] mx-auto">
             {renderContent()}
           </div>
