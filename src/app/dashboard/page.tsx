@@ -1,29 +1,56 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ConfigProvider, theme as antTheme } from 'antd';
-import TopHeader from '@/components/TopHeader';
-import LeftSidebar from '@/components/LeftSidebar';
+import { Sidebar, TopHeader } from '@/components/common';
+import { getSidebarMenuItems, getUserMenuItems, getRoleBranding } from '@/constants/navigation';
 import StudentProfileCard from '@/components/StudentProfileCard';
 import GradesTable from '@/components/GradesTable';
 import WeeklyScheduleView from '@/components/WeeklyScheduleView';
 import PaymentsTable from '@/components/PaymentsTable';
 import StudentCertificate from '@/components/StudentCertificate';
 import { Language } from '@/types';
-import { mockStudent, mockGrades, mockSchedules, mockEvents, mockPayments } from '@/data/mockData';
+import { mockStudent, mockGrades, mockSchedules, mockPayments } from '@/data/mockData';
 import LecturesTab from '@/components/LecturesTab';
+import { CalendarOutlined } from '@ant-design/icons';
 
 export default function DashboardPage() {
   const [language, setLanguage] = useState<Language>('mn');
   const [activeMenu, setActiveMenu] = useState('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleMobileMenuToggle = () => {
-    setMobileMenuOpen(prev => !prev);
+  // Get config-driven menu items based on role and language
+  const sidebarItems = useMemo(
+    () => getSidebarMenuItems('student', language),
+    [language]
+  );
+
+  const userMenuItems = useMemo(
+    () => getUserMenuItems(language),
+    [language]
+  );
+
+  const branding = useMemo(
+    () => getRoleBranding('student', language),
+    [language]
+  );
+
+  const handleMenuClick = (key: string) => {
+    if (key === 'logout') {
+      // Handle logout
+      console.log('Logout clicked');
+      return;
+    }
+    setActiveMenu(key);
   };
 
-  const handleMobileMenuClose = () => {
-    setMobileMenuOpen(false);
+  const handleUserMenuClick = (key: string) => {
+    if (key === 'logout') {
+      console.log('Logout clicked');
+      return;
+    }
+    // Handle other user menu actions
+    console.log('User menu clicked:', key);
   };
 
   const renderContent = () => {
@@ -31,15 +58,11 @@ export default function DashboardPage() {
       case 'home':
         return (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
-            {/* Left Column - Profile and Grades */}
             <div className="lg:col-span-8">
               <WeeklyScheduleView schedules={mockSchedules} language={language} />
             </div>
-
-            {/* Right Column - Weekly Schedule (Full Height) */}
             <div className="lg:col-span-4 space-y-4 sm:space-y-8">
               <StudentProfileCard student={mockStudent} language={language} />
-
               <GradesTable grades={mockGrades} language={language} />
             </div>
           </div>
@@ -50,14 +73,14 @@ export default function DashboardPage() {
       
       case 'student-info':
         return (
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6'>
-                <div className="md:col-span-1">
-                    <StudentProfileCard student={mockStudent} language={language} small />
-                </div>
-                <div className='md:col-span-2'>
-                    <StudentCertificate student={mockStudent} language={language} />
-                </div>
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6'>
+            <div className="md:col-span-1">
+              <StudentProfileCard student={mockStudent} language={language} small />
             </div>
+            <div className='md:col-span-2'>
+              <StudentCertificate student={mockStudent} language={language} />
+            </div>
+          </div>
         );
       
       case 'payments':
@@ -92,26 +115,32 @@ export default function DashboardPage() {
       }}
     >
       <div className="min-h-screen bg-gray-50">
-        {/* Top Header */}
+        {/* Reusable TopHeader */}
         <TopHeader 
-          language={language}
-          activeKey={activeMenu}
-          onMenuClick={setActiveMenu}
-          onLanguageChange={setLanguage}
-          studentName={language === 'mn' ? mockStudent.name : mockStudent.nameEn}
-          onMobileMenuToggle={handleMobileMenuToggle}
+          branding={branding}
+          userName={language === 'mn' ? mockStudent.name : mockStudent.nameEn}
+          userMenuItems={userMenuItems}
+          onUserMenuClick={handleUserMenuClick}
+          onMobileMenuToggle={() => setMobileMenuOpen(true)}
+          rightContent={
+            <div className="hidden sm:flex items-center space-x-2 text-sm text-gray-600">
+              <CalendarOutlined />
+              <span>{language === 'mn' ? '2025-2026, Намар' : '2025-2026, Fall'}</span>
+            </div>
+          }
         />
 
-        {/* Left Sidebar */}
-        <LeftSidebar 
-          language={language}
+        {/* Reusable Sidebar */}
+        <Sidebar 
+          items={sidebarItems}
           activeKey={activeMenu}
-          onMenuClick={setActiveMenu}
+          onMenuClick={handleMenuClick}
           mobileOpen={mobileMenuOpen}
-          onMobileClose={handleMobileMenuClose}
+          onMobileClose={() => setMobileMenuOpen(false)}
+          width={208}
         />
         
-        {/* Main Content - Responsive margin */}
+        {/* Main Content */}
         <main className="md:ml-52 mt-14 sm:mt-16 p-3 sm:p-6">
           <div className="max-w-[1600px] mx-auto">
             {renderContent()}

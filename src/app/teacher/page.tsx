@@ -1,26 +1,45 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ConfigProvider, theme as antTheme, Card, Avatar, Button, Breadcrumb, Typography, Statistic } from 'antd';
 import { 
   BookOutlined, 
   FileTextOutlined, 
   UploadOutlined, 
   UserOutlined,
-  LogoutOutlined,
   HomeOutlined as AntHomeOutlined,
   TeamOutlined,
   CheckCircleOutlined
 } from '@ant-design/icons';
-import TeacherSidebar from '@/components/TeacherSidebar';
+import { Sidebar, TopHeader } from '@/components/common';
+import { getSidebarMenuItems, getUserMenuItems, getRoleBranding } from '@/constants/navigation';
 import TeacherGradeManagement from '@/components/TeacherGradeManagement';
 import TeacherLectureUpload from '@/components/TeacherLectureUpload';
 import { mockTeacher, mockCourses } from '@/data/mockData';
+import { Language } from '@/types';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 export default function TeacherPage() {
   const [activeKey, setActiveKey] = useState('dashboard');
+  const [language, setLanguage] = useState<Language>('mn');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Get config-driven menu items
+  const sidebarItems = useMemo(
+    () => getSidebarMenuItems('teacher', language),
+    [language]
+  );
+
+  const userMenuItems = useMemo(
+    () => getUserMenuItems(language),
+    [language]
+  );
+
+  const branding = useMemo(
+    () => getRoleBranding('teacher', language),
+    [language]
+  );
 
   const translations = {
     mn: {
@@ -28,19 +47,42 @@ export default function TeacherPage() {
       gradeManagement: 'Үнэлгээ оруулах',
       lectureUpload: 'Хичээл байршуулах',
       myCourses: 'Миний хичээлүүд',
-      welcome: 'Тавтай морил',
-      logout: 'Гарах',
-      department: 'Тэнхим',
-      email: 'И-мэйл',
       totalStudents: 'Нийт оюутан',
       totalCourses: 'Нийт хичээл',
       pendingGrades: 'Хүлээгдэж буй үнэлгээ',
       quickActions: 'Шуурхай үйлдлүүд',
       selectAction: 'Үйлдэл сонгох',
     },
+    en: {
+      title: 'Teacher Dashboard',
+      gradeManagement: 'Grade Management',
+      lectureUpload: 'Lecture Upload',
+      myCourses: 'My Courses',
+      totalStudents: 'Total Students',
+      totalCourses: 'Total Courses',
+      pendingGrades: 'Pending Grades',
+      quickActions: 'Quick Actions',
+      selectAction: 'Select action',
+    },
   };
 
-  const t = translations['mn'];
+  const t = translations[language];
+
+  const handleMenuClick = (key: string) => {
+    if (key === 'logout') {
+      console.log('Logout clicked');
+      return;
+    }
+    setActiveKey(key);
+  };
+
+  const handleUserMenuClick = (key: string) => {
+    if (key === 'logout') {
+      console.log('Logout clicked');
+      return;
+    }
+    console.log('User menu clicked:', key);
+  };
 
   const renderContent = () => {
     switch (activeKey) {
@@ -152,15 +194,27 @@ export default function TeacherPage() {
       }}
     >
       <div className="min-h-screen bg-gray-50">
-        {/* Sidebar */}
-        <TeacherSidebar 
-          activeKey={activeKey} 
-          onMenuClick={setActiveKey} 
+        {/* Reusable TopHeader */}
+        <TopHeader
+          branding={branding}
+          userName={mockTeacher.name}
+          userMenuItems={userMenuItems}
+          onUserMenuClick={handleUserMenuClick}
+          onMobileMenuToggle={() => setMobileMenuOpen(true)}
+        />
+
+        {/* Reusable Sidebar */}
+        <Sidebar
+          items={sidebarItems}
+          activeKey={activeKey}
+          onMenuClick={handleMenuClick}
+          mobileOpen={mobileMenuOpen}
+          onMobileClose={() => setMobileMenuOpen(false)}
         />
 
         {/* Main Content */}
-        <main className="pl-64 transition-all duration-200">
-          <div className="p-8 max-w-7xl mx-auto">
+        <main className="md:ml-64 mt-14 sm:mt-16 transition-all duration-200">
+          <div className="p-4 sm:p-8 max-w-7xl mx-auto">
             {/* Header Section */}
             <div className="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-100">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -180,16 +234,6 @@ export default function TeacherPage() {
                       </span>
                     </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Button 
-                    danger 
-                    icon={<LogoutOutlined />} 
-                    size="large"
-                    className="flex items-center"
-                  >
-                    {t.logout}
-                  </Button>
                 </div>
               </div>
             </div>
@@ -216,9 +260,4 @@ export default function TeacherPage() {
       </div>
     </ConfigProvider>
   );
-}
-
-// Helper icon component
-function CustomHomeOutlined(props: any) {
-  return <AntHomeOutlined {...props} />;
 }

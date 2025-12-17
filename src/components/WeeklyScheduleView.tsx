@@ -208,15 +208,15 @@ export default function WeeklyScheduleView({
         </div>
       ),
     },
-    {
-      key: '2',
-      label: <span className="text-xs sm:text-sm">{t.gradeTable}</span>,
-      children: (
-        <div className="p-2 sm:p-4">
-          <GradesTable grades={mockGrades} language={language} />
-        </div>
-      ),
-    },
+    // {
+    //   key: '2',
+    //   label: <span className="text-xs sm:text-sm">{t.gradeTable}</span>,
+    //   children: (
+    //     <div className="p-2 sm:p-4">
+    //       <GradesTable grades={mockGrades} language={language} />
+    //     </div>
+    //   ),
+    // },
   ];
 
   return (

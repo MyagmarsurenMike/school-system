@@ -10,5 +10,11 @@ export { ScheduleGrid } from './ScheduleGrid';
 export type { ScheduleGridProps } from './ScheduleGrid';
 export { ScheduleFormModal } from './ScheduleFormModal';
 export type { ScheduleFormModalProps, ScheduleFormValues } from './ScheduleFormModal';
+
+// Layout Components
+export { Sidebar } from './Sidebar';
+export { TopHeader } from './TopHeader';
+
+// Legacy - kept for backward compatibility, will be deprecated
 export { AppSidebar } from './AppSidebar';
 export type { AppSidebarProps } from './AppSidebar';

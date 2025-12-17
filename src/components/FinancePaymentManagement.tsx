@@ -162,8 +162,8 @@ export default function FinancePaymentManagement({ language }: FinancePaymentMan
 
   const filteredStudents = students.filter((s) =>
     s.studentId.toLowerCase().includes(searchText.toLowerCase()) ||
-    s.studentName.toLowerCase().includes(searchText.toLowerCase()) ||
-    s.studentNameEn.toLowerCase().includes(searchText.toLowerCase())
+    s.name.toLowerCase().includes(searchText.toLowerCase()) ||
+    s.nameEn.toLowerCase().includes(searchText.toLowerCase())
   );
 
   // Calculate statistics
@@ -255,7 +255,7 @@ export default function FinancePaymentManagement({ language }: FinancePaymentMan
             <div>
               <p className="text-gray-600">{t.studentName}:</p>
               <p className="font-semibold text-lg">
-                {language === 'mn' ? selectedStudent.studentName : selectedStudent.studentNameEn}
+                {language === 'mn' ? selectedStudent.name : selectedStudent.nameEn}
               </p>
             </div>
             <div>

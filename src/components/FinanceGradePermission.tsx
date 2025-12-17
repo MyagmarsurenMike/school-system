@@ -236,8 +236,8 @@ export default function FinanceGradePermission({ language }: FinanceGradePermiss
 
   const filteredStudents = students.filter((s) =>
     s.studentId.toLowerCase().includes(searchText.toLowerCase()) ||
-    s.studentName.toLowerCase().includes(searchText.toLowerCase()) ||
-    s.studentNameEn.toLowerCase().includes(searchText.toLowerCase())
+    s.name.toLowerCase().includes(searchText.toLowerCase()) ||
+    s.nameEn.toLowerCase().includes(searchText.toLowerCase())
   );
 
   // Calculate statistics

@@ -6,7 +6,7 @@
 export type Language = 'mn' | 'en';
 
 /** User role type for permission-based UI */
-export type UserRole = 'student' | 'teacher' | 'admin' | 'finance';
+export type UserRole = 'student' | 'teacher' | 'admin' | 'finance' | 'manager';
 
 /** Payment status type */
 export type PaymentStatus = 'paid' | 'pending' | 'overdue';
@@ -135,7 +135,6 @@ export interface Payment {
 
 /** Represents student payment permission status */
 export interface StudentPaymentPermission extends BilingualEntity {
-  studentName: any;
   studentId: string;
   paymentStatus: PaymentStatus;
   canViewGrades: boolean;
@@ -229,4 +228,131 @@ export interface StudentScheduleInput {
   startTime: string;
   endTime: string;
   type: ScheduleType;
+}
+
+// =============================================================================
+// LAYOUT COMPONENT TYPES
+// =============================================================================
+
+/** Menu item configuration for sidebar navigation */
+export interface SidebarMenuItem {
+  /** Unique key for the menu item */
+  key: string;
+  /** Icon element to display */
+  icon?: React.ReactNode;
+  /** Label text or element (optional for dividers) */
+  label?: React.ReactNode;
+  /** Optional href for navigation links */
+  href?: string;
+  /** Mark as danger/destructive action */
+  danger?: boolean;
+  /** Nested menu items for submenus */
+  children?: SidebarMenuItem[];
+  /** Whether to render as divider */
+  type?: 'divider' | 'group';
+  /** Disable the menu item */
+  disabled?: boolean;
+}
+
+/** Sidebar branding/logo configuration */
+export interface SidebarBranding {
+  /** Logo element or image URL */
+  logo?: React.ReactNode;
+  /** Title text */
+  title?: string;
+  /** Subtitle text */
+  subtitle?: string;
+}
+
+/** Sidebar component props */
+export interface SidebarProps {
+  /** Menu items configuration */
+  items: SidebarMenuItem[];
+  /** Currently active menu key */
+  activeKey: string;
+  /** Callback when menu item is clicked */
+  onMenuClick: (key: string) => void;
+  /** Branding configuration */
+  branding?: SidebarBranding;
+  /** Width of the sidebar in pixels */
+  width?: number;
+  /** Whether sidebar is collapsible */
+  collapsible?: boolean;
+  /** Current collapsed state */
+  collapsed?: boolean;
+  /** Callback when collapse state changes */
+  onCollapse?: (collapsed: boolean) => void;
+  /** Mobile drawer visibility state */
+  mobileOpen?: boolean;
+  /** Callback to close mobile drawer */
+  onMobileClose?: () => void;
+  /** Custom class name */
+  className?: string;
+  /** Background color class */
+  bgColor?: string;
+  /** Footer content */
+  footer?: React.ReactNode;
+}
+
+/** User dropdown menu item */
+export interface UserMenuItem {
+  key: string;
+  /** Label text (optional for dividers) */
+  label?: string;
+  icon?: React.ReactNode;
+  danger?: boolean;
+  type?: 'divider';
+}
+
+/** Top header branding configuration */
+export interface HeaderBranding {
+  /** Logo element */
+  logo?: React.ReactNode;
+  /** Title text */
+  title?: string;
+  /** Subtitle text */
+  subtitle?: string;
+}
+
+/** Top header component props */
+export interface TopHeaderProps {
+  /** Branding configuration */
+  branding?: HeaderBranding;
+  /** User display name */
+  userName?: string;
+  /** User avatar URL */
+  userAvatar?: string;
+  /** User dropdown menu items */
+  userMenuItems?: UserMenuItem[];
+  /** Callback when user menu item is clicked */
+  onUserMenuClick?: (key: string) => void;
+  /** Whether to show mobile menu toggle */
+  showMobileToggle?: boolean;
+  /** Callback when mobile menu toggle is clicked */
+  onMobileMenuToggle?: () => void;
+  /** Right side extra content */
+  rightContent?: React.ReactNode;
+  /** Center content */
+  centerContent?: React.ReactNode;
+  /** Height of the header */
+  height?: number;
+  /** Custom class name */
+  className?: string;
+  /** Whether header is fixed */
+  fixed?: boolean;
+}
+
+/** Layout configuration for pages */
+export interface LayoutConfig {
+  /** Sidebar configuration */
+  sidebar?: {
+    items: SidebarMenuItem[];
+    branding?: SidebarBranding;
+    width?: number;
+  };
+  /** Header configuration */
+  header?: {
+    branding?: HeaderBranding;
+    userMenuItems?: UserMenuItem[];
+  };
 }

@@ -35,6 +35,7 @@ const PORTAL_TITLES: Readonly<Record<UserRole, Record<Language, string>>> = {
   teacher: { mn: 'Багшийн систем', en: 'Teacher Portal' },
   finance: { mn: 'Санхүүгийн систем', en: 'Finance Portal' },
   admin: { mn: 'Админ систем', en: 'Admin Portal' },
+  manager: { mn: 'Менежерийн систем', en: 'Manager Portal' },
 } as const;
 
 /** Role-based gradient colors for branding */
@@ -43,6 +44,7 @@ const ROLE_COLORS: Readonly<Record<UserRole, string>> = {
   teacher: 'from-purple-600 to-indigo-600',
   finance: 'from-green-600 to-teal-600',
   admin: 'from-red-600 to-orange-600',
+  manager: 'from-yellow-600 to-orange-600',
 } as const;
 
 /** Role-based icons */
@@ -51,6 +53,7 @@ const ROLE_ICONS: Readonly<Record<UserRole, React.ReactNode>> = {
   teacher: '👨‍🏫',
   finance: <PieChartFilled className="text-2xl" />,
   admin: '⚙️',
+  manager: '👔',
 } as const;
 
 /** Language selector options */

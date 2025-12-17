@@ -95,10 +95,21 @@ const getMenuItems = (
     { key: 'logout', icon: <LogoutOutlined />, label: t.logout, danger: true },
   ];
 
+  const managerItems: MenuItem[] = [
+    { key: 'dashboard', icon: <HomeOutlined />, label: t.dashboard },
+    { key: 'schedule', icon: <CalendarOutlined />, label: t.schedule },
+    { key: 'attendance', icon: <ClockCircleOutlined />, label: t.attendance },
+    { key: 'reports', icon: <FileTextOutlined />, label: t.reports },
+    { key: 'settings', icon: <SettingOutlined />, label: t.settings },
+    { type: 'divider' },
+    { key: 'logout', icon: <LogoutOutlined />, label: t.logout, danger: true },
+  ];
+
   switch (role) {
     case 'teacher': return teacherItems;
     case 'finance': return financeItems;
     case 'admin': return adminItems;
+    case 'manager': return managerItems;
     case 'student':
     default: return studentItems;
   }
