@@ -82,7 +82,6 @@ export default function TeacherLectureUpload({ courses }: TeacherLectureUploadPr
       id: `L${Date.now()}`,
       courseId: selectedCourse,
       title: title,
-      titleEn: title,
       description: description,
       uploadDate: new Date().toISOString().split('T')[0],
       fileUrl: `/uploads/${file.name}`,

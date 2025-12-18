@@ -3,19 +3,14 @@
 import React from 'react';
 import { Modal, Form, Input, Select, TimePicker, Button } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
-import { Schedule, Language } from '@/types';
-import { 
-  scheduleTranslations, 
-  getCourseSelectOptions, 
-  getTypeSelectOptions,
-  COURSE_OPTIONS 
-} from '@/constants/schedule';
+import { Schedule } from '@/types';
+import { SCHEDULE_LABELS, COURSES, SCHEDULE_TYPES } from '@/constants/schedule';
+import { COMMON_LABELS } from '@/constants';
 import dayjs, { Dayjs } from 'dayjs';
 
 export interface ScheduleFormValues {
   courseCode: string;
   courseName?: string;
-  courseNameEn?: string;
   teacher: string;
   room: string;
   startTime: Dayjs;
@@ -30,8 +25,6 @@ export interface ScheduleFormModalProps {
   schedule: Schedule | null;
   /** Selected cell info */
   selectedCell: { day: number; time: string } | null;
-  /** Current language */
-  language: Language;
   /** Close handler */
   onClose: () => void;
   /** Save handler */
@@ -47,13 +40,11 @@ export const ScheduleFormModal: React.FC<ScheduleFormModalProps> = ({
   open,
   schedule,
   selectedCell,
-  language,
   onClose,
   onSave,
   onDelete,
 }) => {
   const [form] = Form.useForm<ScheduleFormValues>();
-  const t = scheduleTranslations[language];
   const isEdit = !!schedule;
 
   // Reset form when modal opens/closes or schedule changes
@@ -63,7 +54,6 @@ export const ScheduleFormModal: React.FC<ScheduleFormModalProps> = ({
         form.setFieldsValue({
           courseCode: schedule.courseCode,
           courseName: schedule.courseName,
-          courseNameEn: schedule.courseNameEn,
           teacher: schedule.teacher,
           room: schedule.room,
           type: schedule.type,
@@ -95,10 +85,10 @@ export const ScheduleFormModal: React.FC<ScheduleFormModalProps> = ({
   const handleDelete = () => {
     if (schedule && onDelete) {
       Modal.confirm({
-        title: t.deleteConfirmTitle,
-        content: t.deleteConfirmContent,
-        okText: language === 'mn' ? 'Тийм' : 'Yes',
-        cancelText: language === 'mn' ? 'Үгүй' : 'No',
+        title: SCHEDULE_LABELS.deleteConfirmTitle,
+        content: SCHEDULE_LABELS.deleteConfirmContent,
+        okText: COMMON_LABELS.yes,
+        cancelText: COMMON_LABELS.no,
         okButtonProps: { danger: true },
         onOk: () => {
           onDelete(schedule);
@@ -110,7 +100,7 @@ export const ScheduleFormModal: React.FC<ScheduleFormModalProps> = ({
 
   return (
     <Modal
-      title={isEdit ? t.editSchedule : t.addSchedule}
+      title={isEdit ? SCHEDULE_LABELS.editSchedule : SCHEDULE_LABELS.addSchedule}
       open={open}
       onCancel={handleClose}
       footer={null}
@@ -125,27 +115,27 @@ export const ScheduleFormModal: React.FC<ScheduleFormModalProps> = ({
       >
         <Form.Item
           name="courseCode"
-          label={t.courseName}
-          rules={[{ required: true, message: `${t.courseName} ${language === 'mn' ? 'сонгоно уу' : 'is required'}` }]}
+          label={SCHEDULE_LABELS.courseName}
+          rules={[{ required: true, message: `${SCHEDULE_LABELS.courseName} сонгоно уу` }]}
         >
           <Select 
-            options={getCourseSelectOptions(language)} 
-            placeholder={t.selectCourse} 
+            options={COURSES} 
+            placeholder={SCHEDULE_LABELS.selectCourse} 
           />
         </Form.Item>
 
         <div className="grid grid-cols-2 gap-4">
           <Form.Item
             name="teacher"
-            label={t.teacher}
-            rules={[{ required: true, message: `${t.teacher} ${language === 'mn' ? 'оруулна уу' : 'is required'}` }]}
+            label={SCHEDULE_LABELS.teacher}
+            rules={[{ required: true, message: `${SCHEDULE_LABELS.teacher} оруулна уу` }]}
           >
-            <Input placeholder={language === 'mn' ? 'Доктор Б.Эрдэнэ' : 'Dr. B. Erdene'} />
+            <Input placeholder="Доктор Б.Эрдэнэ" />
           </Form.Item>
           <Form.Item
             name="room"
-            label={t.room}
-            rules={[{ required: true, message: `${t.room} ${language === 'mn' ? 'оруулна уу' : 'is required'}` }]}
+            label={SCHEDULE_LABELS.room}
+            rules={[{ required: true, message: `${SCHEDULE_LABELS.room} оруулна уу` }]}
           >
             <Input placeholder="301" />
           </Form.Item>
@@ -154,15 +144,15 @@ export const ScheduleFormModal: React.FC<ScheduleFormModalProps> = ({
         <div className="grid grid-cols-2 gap-4">
           <Form.Item
             name="startTime"
-            label={t.startTime}
-            rules={[{ required: true, message: `${t.startTime} ${language === 'mn' ? 'оруулна уу' : 'is required'}` }]}
+            label={SCHEDULE_LABELS.startTime}
+            rules={[{ required: true, message: `${SCHEDULE_LABELS.startTime} оруулна уу` }]}
           >
             <TimePicker format="HH:mm" className="w-full" />
           </Form.Item>
           <Form.Item
             name="endTime"
-            label={t.endTime}
-            rules={[{ required: true, message: `${t.endTime} ${language === 'mn' ? 'оруулна уу' : 'is required'}` }]}
+            label={SCHEDULE_LABELS.endTime}
+            rules={[{ required: true, message: `${SCHEDULE_LABELS.endTime} оруулна уу` }]}
           >
             <TimePicker format="HH:mm" className="w-full" />
           </Form.Item>
@@ -170,12 +160,12 @@ export const ScheduleFormModal: React.FC<ScheduleFormModalProps> = ({
 
         <Form.Item
           name="type"
-          label={t.type}
-          rules={[{ required: true, message: `${t.type} ${language === 'mn' ? 'сонгоно уу' : 'is required'}` }]}
+          label={SCHEDULE_LABELS.type}
+          rules={[{ required: true, message: `${SCHEDULE_LABELS.type} сонгоно уу` }]}
         >
           <Select 
-            options={getTypeSelectOptions(language)} 
-            placeholder={t.selectType} 
+            options={SCHEDULE_TYPES} 
+            placeholder={SCHEDULE_LABELS.selectType} 
           />
         </Form.Item>
 
@@ -183,16 +173,16 @@ export const ScheduleFormModal: React.FC<ScheduleFormModalProps> = ({
           <div>
             {isEdit && onDelete && (
               <Button danger onClick={handleDelete} icon={<DeleteOutlined />}>
-                {t.deleteSchedule}
+                {SCHEDULE_LABELS.deleteSchedule}
               </Button>
             )}
           </div>
           <div className="flex gap-2">
             <Button onClick={handleClose}>
-              {language === 'mn' ? 'Цуцлах' : 'Cancel'}
+              {COMMON_LABELS.cancel}
             </Button>
             <Button type="primary" htmlType="submit">
-              {language === 'mn' ? 'Хадгалах' : 'Save'}
+              {COMMON_LABELS.save}
             </Button>
           </div>
         </div>

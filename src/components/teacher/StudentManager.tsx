@@ -27,7 +27,7 @@ import {
 } from '@ant-design/icons';
 import { Student, Schedule, StudentInput } from '@/types';
 import type { ColumnsType } from 'antd/es/table';
-import WeeklyScheduleView from './WeeklyScheduleView';
+import { WeeklyScheduleView } from '@/components/shared';
 
 interface StudentManagerProps {
   onStudentAdded?: (student: Student) => void;
@@ -109,7 +109,6 @@ const mockSchedules: ExtendedSchedule[] = [
     id: 'schedule-1',
     courseCode: 'CS101',
     courseName: 'Програмчлалын үндэс',
-    courseNameEn: 'Introduction to Programming',
     teacher: 'Доктор Б.Эрдэнэ',
     room: '301',
     dayOfWeek: 0,
@@ -123,7 +122,6 @@ const mockSchedules: ExtendedSchedule[] = [
     id: 'schedule-2',
     courseCode: 'CS201',
     courseName: 'Өгөгдлийн бүтэц',
-    courseNameEn: 'Data Structures',
     teacher: 'Доктор Г.Батболд',
     room: '205',
     dayOfWeek: 1,
@@ -137,7 +135,6 @@ const mockSchedules: ExtendedSchedule[] = [
     id: 'schedule-3',
     courseCode: 'CS301',
     courseName: 'Алгоритм',
-    courseNameEn: 'Algorithms',
     teacher: 'Профессор Д.Оюунцэцэг',
     room: '102',
     dayOfWeek: 2,
@@ -151,7 +148,6 @@ const mockSchedules: ExtendedSchedule[] = [
     id: 'schedule-4',
     courseCode: 'CS401',
     courseName: 'Өгөгдлийн сан',
-    courseNameEn: 'Database Systems',
     teacher: 'Доктор Н.Мөнхбат',
     room: '401',
     dayOfWeek: 3,
@@ -165,7 +161,6 @@ const mockSchedules: ExtendedSchedule[] = [
     id: 'schedule-5',
     courseCode: 'CS402',
     courseName: 'Вэб программчлал',
-    courseNameEn: 'Web Programming',
     teacher: 'Доктор А.Ганболд',
     room: '303',
     dayOfWeek: 4,
@@ -179,7 +174,6 @@ const mockSchedules: ExtendedSchedule[] = [
     id: 'schedule-6',
     courseCode: 'CS403',
     courseName: 'Програм хангамжийн инженерчлэл',
-    courseNameEn: 'Software Engineering',
     teacher: 'Профессор С.Энхтүвшин',
     room: '202',
     dayOfWeek: 0,
@@ -193,7 +187,6 @@ const mockSchedules: ExtendedSchedule[] = [
     id: 'schedule-7',
     courseCode: 'CS404',
     courseName: 'Машин сургалт',
-    courseNameEn: 'Machine Learning',
     teacher: 'Доктор Ц.Батсүх',
     room: '105',
     dayOfWeek: 2,
@@ -207,7 +200,6 @@ const mockSchedules: ExtendedSchedule[] = [
     id: 'schedule-8',
     courseCode: 'CS101',
     courseName: 'Програмчлалын үндэс',
-    courseNameEn: 'Introduction to Programming',
     teacher: 'Доктор Б.Эрдэнэ',
     room: '301',
     dayOfWeek: 3,
@@ -276,7 +268,6 @@ export default function StudentManager({ onStudentAdded, onScheduleAdded }: Stud
       id: `schedule-${Date.now()}`,
       courseCode: values.course,
       courseName: selectedCourse?.label.split(' - ')[1] || values.course,
-      courseNameEn: values.course,
       teacher: values.teacher,
       room: values.room,
       dayOfWeek: values.dayOfWeek,
@@ -407,7 +398,6 @@ export default function StudentManager({ onStudentAdded, onScheduleAdded }: Stud
 
       <WeeklyScheduleView 
         schedules={schedules} 
-        language="mn" 
         userRole="teacher" 
         onScheduleUpdate={(updated) => console.log(updated)} 
       />

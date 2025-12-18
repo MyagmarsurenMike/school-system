@@ -18,139 +18,53 @@ import {
   SafetyCertificateOutlined,
   CalendarOutlined,
   ArrowLeftOutlined,
+  BellOutlined,
 } from '@ant-design/icons';
-import { Language, UserRole, SidebarMenuItem, UserMenuItem } from '@/types';
+import { UserRole, SidebarMenuItem, UserMenuItem } from '@/types';
 
 // =============================================================================
-// TYPE DEFINITIONS
+// NAVIGATION LABELS
 // =============================================================================
 
-/** Generic type for bilingual translation records */
-type TranslationRecord<T> = Readonly<Record<Language, T>>;
-
-/** Navigation translations interface */
-export interface NavigationTranslations {
+export const NAV_LABELS = {
   // Common navigation
-  home: string;
-  calendar: string;
-  logout: string;
-  exit: string;
-  settings: string;
+  home: 'Нүүр хуудас',
+  calendar: 'Календарь',
+  logout: 'Гарах',
+  exit: 'Гарах',
+  settings: 'Тохиргоо',
+  profile: 'Профайл',
+  notifications: 'Мэдэгдэл',
   
   // Student navigation
-  studentInfo: string;
-  payments: string;
-  surveys: string;
-  lessons: string;
-  schedules: string;
-  definitions: string;
-  guides: string;
-  support: string;
+  studentInfo: 'Миний мэдээлэл',
+  payments: 'Төлбөрийн мэдээлэл',
+  surveys: 'Судалгаа',
+  lessons: 'Хичээл',
+  schedules: 'Сургалт',
+  definitions: 'Тодорхойлолт',
+  guides: 'Хэтэч',
+  support: 'Хэтэч',
   
   // Teacher navigation
-  dashboard: string;
-  myCourses: string;
-  gradeEntry: string;
-  uploadLecture: string;
-  studentManager: string;
-  eLearning: string;
-  training: string;
+  dashboard: 'Хяналтын самбар',
+  myCourses: 'Миний хичээлүүд',
+  gradeEntry: 'Үнэлгээ оруулах',
+  uploadLecture: 'Хичээл байршуулах',
+  studentManager: 'Оюутны удирдлага',
+  eLearning: 'Цахим сургалт',
+  training: 'Сургалт',
   
   // Finance navigation
-  financeManagement: string;
-  gradePermissions: string;
+  financeManagement: 'Санхүүгийн удирдлага',
+  gradePermissions: 'Дүнгийн эрх',
 
   // Manager navigation
-  schedule: string;
-  scheduleMonthly: string;
-  attendance: string;
-  reports: string;
-
-  // User menu
-  profile: string;
-}
-
-// =============================================================================
-// TRANSLATION DATA
-// =============================================================================
-
-export const navigationTranslations: TranslationRecord<NavigationTranslations> = {
-  mn: {
-    // Common
-    home: 'Нүүр хуудас',
-    calendar: 'Календарь',
-    logout: 'Гарах',
-    exit: 'Гарах',
-    settings: 'Тохиргоо',
-    profile: 'Профайл',
-    
-    // Student
-    studentInfo: 'Миний мэдээлэл',
-    payments: 'Төлбөрийн мэдээлэл',
-    surveys: 'Судалгаа',
-    lessons: 'Хичээл',
-    schedules: 'Сургалт',
-    definitions: 'Тодорхойлолт',
-    guides: 'Хэтэч',
-    support: 'Хэтэч',
-    
-    // Teacher
-    dashboard: 'Хяналтын самбар',
-    myCourses: 'Миний хичээлүүд',
-    gradeEntry: 'Үнэлгээ оруулах',
-    uploadLecture: 'Хичээл байршуулах',
-    studentManager: 'Оюутны удирдлага',
-    eLearning: 'Цахим сургалт',
-    training: 'Сургалт',
-    
-    // Finance
-    financeManagement: 'Санхүүгийн удирдлага',
-    gradePermissions: 'Дүнгийн эрх',
-
-    // Manager
-    schedule: 'Хуваарь',
-    scheduleMonthly: 'Сарын хуваарь',
-    attendance: 'Ирц',
-    reports: 'Тайлан',
-  },
-  en: {
-    // Common
-    home: 'Home',
-    calendar: 'Calendar',
-    logout: 'Logout',
-    exit: 'Exit',
-    settings: 'Settings',
-    profile: 'Profile',
-    
-    // Student
-    studentInfo: 'My Info',
-    payments: 'Payments',
-    surveys: 'Surveys',
-    lessons: 'Lessons',
-    schedules: 'Schedules',
-    definitions: 'Definitions',
-    guides: 'Guides',
-    support: 'Support',
-    
-    // Teacher
-    dashboard: 'Dashboard',
-    myCourses: 'My Courses',
-    gradeEntry: 'Grade Entry',
-    uploadLecture: 'Upload Lecture',
-    studentManager: 'Student Manager',
-    eLearning: 'E-Learning',
-    training: 'Training',
-    
-    // Finance
-    financeManagement: 'Finance Management',
-    gradePermissions: 'Grade Permissions',
-
-    // Manager
-    schedule: 'Schedule',
-    scheduleMonthly: 'Monthly Schedule',
-    attendance: 'Attendance',
-    reports: 'Reports',
-  },
+  schedule: 'Хуваарь',
+  scheduleMonthly: 'Сарын хуваарь',
+  attendance: 'Ирц',
+  reports: 'Тайлан',
+  back: 'Буцах',
 } as const;
 
 // =============================================================================
@@ -160,67 +74,60 @@ export const navigationTranslations: TranslationRecord<NavigationTranslations> =
 /**
  * Get sidebar menu items for a specific user role
  */
-export const getSidebarMenuItems = (
-  role: UserRole,
-  language: Language = 'mn'
-): SidebarMenuItem[] => {
-  const t = navigationTranslations[language];
-
+export const getSidebarMenuItems = (role: UserRole): SidebarMenuItem[] => {
   const menuConfigs: Record<UserRole, SidebarMenuItem[]> = {
     student: [
-      { key: 'home', icon: <HomeOutlined />, label: t.home },
-      { key: 'lessons', icon: <BookOutlined />, label: t.lessons },
-      { key: 'student-info', icon: <UserOutlined />, label: t.studentInfo },
-      { key: 'payments', icon: <BankOutlined />, label: t.payments },
-      // { key: 'guides', icon: <QuestionCircleOutlined />, label: t.support },
+      { key: 'home', icon: <HomeOutlined />, label: NAV_LABELS.home },
+      { key: 'lessons', icon: <BookOutlined />, label: NAV_LABELS.lessons },
+      { key: 'student-info', icon: <UserOutlined />, label: NAV_LABELS.studentInfo },
+      { key: 'payments', icon: <BankOutlined />, label: NAV_LABELS.payments },
       { key: 'divider-1', type: 'divider' },
-      { key: 'logout', icon: <LogoutOutlined />, label: t.logout, danger: true },
+      { key: 'logout', icon: <LogoutOutlined />, label: NAV_LABELS.logout, danger: true },
     ],
 
     teacher: [
-      { key: 'dashboard', icon: <HomeOutlined />, label: t.dashboard, href: '/teacher' },
-      { key: 'courses', icon: <BookOutlined />, label: t.myCourses },
-      { key: 'grades', icon: <EditOutlined />, label: t.gradeEntry },
-      { key: 'upload', icon: <CloudUploadOutlined />, label: t.uploadLecture },
+      { key: 'dashboard', icon: <HomeOutlined />, label: NAV_LABELS.dashboard, href: '/teacher' },
+      { key: 'courses', icon: <BookOutlined />, label: NAV_LABELS.myCourses },
+      { key: 'grades', icon: <EditOutlined />, label: NAV_LABELS.gradeEntry },
+      { key: 'upload', icon: <CloudUploadOutlined />, label: NAV_LABELS.uploadLecture },
       { 
         key: 'students', 
         icon: <TeamOutlined />, 
-        label: t.studentManager,
+        label: NAV_LABELS.studentManager,
         href: '/teacher/student-manager',
       },
-      // { key: 'settings', icon: <SettingOutlined />, label: t.settings },
+      { key: 'notifications', icon: <BellOutlined />, label: NAV_LABELS.notifications },
       { key: 'divider-1', type: 'divider' },
-      { key: 'logout', icon: <LogoutOutlined />, label: t.logout, danger: true },
+      { key: 'logout', icon: <LogoutOutlined />, label: NAV_LABELS.logout, danger: true },
     ],
 
     finance: [
-      { key: 'dashboard', icon: <HomeOutlined />, label: t.dashboard },
-      { key: 'payments', icon: <BankOutlined />, label: t.financeManagement },
-      { key: 'permissions', icon: <SafetyCertificateOutlined />, label: t.gradePermissions },
-      // { key: 'settings', icon: <SettingOutlined />, label: t.settings },
+      { key: 'dashboard', icon: <HomeOutlined />, label: NAV_LABELS.dashboard },
+      { key: 'payments', icon: <BankOutlined />, label: NAV_LABELS.financeManagement },
+      { key: 'permissions', icon: <SafetyCertificateOutlined />, label: NAV_LABELS.gradePermissions },
+      { key: 'notfications', icon: <BellOutlined />, label: NAV_LABELS.notifications },
       { key: 'divider-1', type: 'divider' },
-      { key: 'logout', icon: <LogoutOutlined />, label: t.logout, danger: true },
+      { key: 'logout', icon: <LogoutOutlined />, label: NAV_LABELS.logout, danger: true },
     ],
 
     admin: [
-      { key: 'dashboard', icon: <HomeOutlined />, label: t.dashboard },
-      { key: 'students', icon: <TeamOutlined />, label: t.studentManager },
-      { key: 'courses', icon: <BookOutlined />, label: t.myCourses },
-      { key: 'payments', icon: <BankOutlined />, label: t.financeManagement },
-      { key: 'settings', icon: <SettingOutlined />, label: t.settings },
+      { key: 'dashboard', icon: <HomeOutlined />, label: NAV_LABELS.dashboard },
+      { key: 'students', icon: <TeamOutlined />, label: NAV_LABELS.studentManager },
+      { key: 'courses', icon: <BookOutlined />, label: NAV_LABELS.myCourses },
+      { key: 'payments', icon: <BankOutlined />, label: NAV_LABELS.financeManagement },
+      { key: 'settings', icon: <SettingOutlined />, label: NAV_LABELS.settings },
       { key: 'divider-1', type: 'divider' },
-      { key: 'logout', icon: <LogoutOutlined />, label: t.logout, danger: true },
+      { key: 'logout', icon: <LogoutOutlined />, label: NAV_LABELS.logout, danger: true },
     ],
 
     manager: [
-      { key: 'dashboard', icon: <ArrowLeftOutlined />, label: 'Буцах', href: '/teacher' },
-      { key: 'students', icon: <TeamOutlined />, label: t.studentManager },
-      { key: 'schedule', icon: <CalendarOutlined />, label: t.schedule },
-      // { key: 'attendance', icon: <ClockCircleOutlined />, label: t.attendance },
-      // { key: 'reports', icon: <FileTextOutlined />, label: t.reports },
-      // { key: 'settings', icon: <SettingOutlined />, label: t.settings },
+      { key: 'dashboard', icon: <ArrowLeftOutlined />, label: NAV_LABELS.back, href: '/teacher' },
+      { key: 'students', icon: <TeamOutlined />, label: NAV_LABELS.studentManager },
+      { key: 'schedule', icon: <CalendarOutlined />, label: NAV_LABELS.schedule },
+      { key: 'grade-permissions', icon: <SafetyCertificateOutlined />, label: NAV_LABELS.gradePermissions },
+      { key: 'notfications', icon: <BellOutlined />, label: NAV_LABELS.notifications },
       { key: 'divider-1', type: 'divider' },
-      { key: 'logout', icon: <LogoutOutlined />, label: t.logout, danger: true },
+      { key: 'logout', icon: <LogoutOutlined />, label: NAV_LABELS.logout, danger: true },
     ],
   };
 
@@ -230,30 +137,25 @@ export const getSidebarMenuItems = (
 /**
  * Get user dropdown menu items
  */
-export const getUserMenuItems = (language: Language = 'mn'): UserMenuItem[] => {
-  const t = navigationTranslations[language];
-
+export const getUserMenuItems = (): UserMenuItem[] => {
   return [
-    { key: 'profile', label: t.profile, icon: <UserOutlined /> },
-    { key: 'settings', label: t.settings, icon: <SettingOutlined /> },
+    { key: 'profile', label: NAV_LABELS.profile, icon: <UserOutlined /> },
+    { key: 'settings', label: NAV_LABELS.settings, icon: <SettingOutlined /> },
     { key: 'divider', type: 'divider' },
-    { key: 'logout', label: t.logout, danger: true },
+    { key: 'logout', label: NAV_LABELS.logout, danger: true },
   ];
 };
 
 /**
  * Get default branding for a user role
  */
-export const getRoleBranding = (
-  role: UserRole,
-  language: Language = 'mn'
-): { title: string; logo: React.ReactNode } => {
-  const titles: Record<UserRole, Record<Language, string>> = {
-    student: { mn: 'Оюутны систем', en: 'Student Portal' },
-    teacher: { mn: 'Багшийн систем', en: 'Teacher Portal' },
-    finance: { mn: 'Санхүүгийн систем', en: 'Finance Portal' },
-    admin: { mn: 'Админ систем', en: 'Admin Portal' },
-    manager: { mn: 'Оюутны удирдлага', en: 'Student Manager' },
+export const getRoleBranding = (role: UserRole): { title: string; logo: React.ReactNode } => {
+  const titles: Record<UserRole, string> = {
+    student: 'Оюутны систем',
+    teacher: 'Багшийн систем',
+    finance: 'Санхүүгийн систем',
+    admin: 'Админ систем',
+    manager: 'Оюутны удирдлага',
   };
 
   const logoColors: Record<UserRole, string> = {
@@ -273,7 +175,7 @@ export const getRoleBranding = (
   };
 
   return {
-    title: titles[role][language],
+    title: titles[role],
     logo: (
       <div className={`w-8 h-8 sm:w-10 sm:h-10 ${logoColors[role]} rounded-lg flex items-center justify-center`}>
         <span className="text-white font-bold text-base sm:text-xl">

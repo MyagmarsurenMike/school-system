@@ -435,11 +435,14 @@ const StudentEdit: React.FC = () => {
     return (
         <div className="space-y-4 md:space-y-6">
             {/* Header Card with Statistics */}
-            <StudentStats 
-                count={students.length} 
-                isMobile={isMobile} 
-                onAddClick={() => handleOpenModal()} 
-            />
+            <div>
+                <StudentStats 
+                    count={students.length} 
+                    isMobile={isMobile} 
+                    onAddClick={() => handleOpenModal()} 
+                />
+            </div>
+            
 
             {/* Student Table */}
             <Card 
@@ -481,7 +484,7 @@ const StudentEdit: React.FC = () => {
                             />
                         ),
                     }}
-                    className="grades-table"
+                    className="grades-table space-y-2"
                     scroll={isMobile ? undefined : { x: 1000 }}
                     size={isMobile ? "small" : "middle"}
                 />

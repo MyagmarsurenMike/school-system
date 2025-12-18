@@ -2,15 +2,13 @@
 
 import React from 'react';
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
-import { Schedule, Language } from '@/types';
-import { TIME_SLOTS, WEEKDAYS, scheduleTranslations } from '@/constants/schedule';
+import { Schedule } from '@/types';
+import { TIME_SLOTS, WEEKDAYS, DAY_NAMES } from '@/constants/schedule';
 import { ScheduleCell } from './ScheduleCell';
 
 export interface ScheduleGridProps {
   /** List of schedules to display */
   schedules: Schedule[];
-  /** Current language */
-  language: Language;
   /** Whether the grid is editable */
   editable?: boolean;
   /** Handler for clicking on an empty cell */
@@ -29,15 +27,12 @@ export interface ScheduleGridProps {
  */
 export const ScheduleGrid: React.FC<ScheduleGridProps> = ({
   schedules,
-  language,
   editable = false,
   onEmptyCellClick,
   onScheduleClick,
   timeSlots = TIME_SLOTS,
   weekdays = WEEKDAYS,
 }) => {
-  const t = scheduleTranslations[language];
-
   const getScheduleForSlot = (day: number, time: string): Schedule[] => {
     return schedules.filter(s => s.dayOfWeek === day && s.startTime === time);
   };
@@ -47,7 +42,7 @@ export const ScheduleGrid: React.FC<ScheduleGridProps> = ({
       {editable && (
         <div className="p-3 bg-blue-50 border-b border-blue-200 text-sm text-blue-700 my-4 rounded-lg flex items-center">
           <EditOutlined className="mr-2" />
-          {t.editPermissionHint}
+          Edit mode enabled
         </div>
       )}
       <table className="w-full border-collapse min-w-[800px] table-fixed">
@@ -59,7 +54,7 @@ export const ScheduleGrid: React.FC<ScheduleGridProps> = ({
                 key={index} 
                 className="border border-gray-200 bg-gray-50 p-2 text-sm font-semibold text-gray-700"
               >
-                {t.days[day - 1]}
+                {DAY_NAMES[day - 1]}
               </th>
             ))}
           </tr>
@@ -93,7 +88,6 @@ export const ScheduleGrid: React.FC<ScheduleGridProps> = ({
                       <ScheduleCell
                         key={idx}
                         schedule={schedule}
-                        language={language}
                         editable={editable}
                         onClick={(s) => onScheduleClick?.(s, day, time)}
                       />

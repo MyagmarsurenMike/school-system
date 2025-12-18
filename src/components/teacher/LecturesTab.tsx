@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { Modal, Pagination } from 'antd';
 import { FilePdfOutlined, FilePptOutlined, ArrowLeftOutlined, EyeOutlined, BookOutlined, PlayCircleOutlined } from '@ant-design/icons';
-import { Language, Subject, CourseLecture, CourseMaterial } from '@/types';
+import { Subject, CourseLecture, CourseMaterial } from '@/types';
 import { SUBJECTS } from '@/constants/lecture';
 
-interface LecturesTabProps {
-    language?: Language;
-}
+interface LecturesTabProps {}
 
-const LecturesTab: React.FC<LecturesTabProps> = ({ language = 'mn' }) => {
+const LecturesTab: React.FC<LecturesTabProps> = () => {
     // State for navigation: null = subjects grid, subject = lectures list, lecture = detail view
     const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
     const [selectedLecture, setSelectedLecture] = useState<CourseLecture | null>(null);
@@ -59,7 +57,7 @@ const LecturesTab: React.FC<LecturesTabProps> = ({ language = 'mn' }) => {
                     className="mb-6 flex items-center text-blue-600 hover:text-blue-800 transition-colors"
                 >
                     <ArrowLeftOutlined className="mr-2" />
-                    {language === 'mn' ? 'Лекц жагсаалт руу буцах' : 'Back to Lectures'}
+                    Лекц жагсаалт руу буцах
                 </button>
 
                 <div className="bg-white rounded-lg shadow-md p-8 border border-gray-200">
@@ -77,7 +75,7 @@ const LecturesTab: React.FC<LecturesTabProps> = ({ language = 'mn' }) => {
                     </div>
 
                     <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                        {language === 'mn' ? 'Хичээлийн материал' : 'Course Materials'}
+                        Хичээлийн материал
                     </h3>
                     
                     <div className="w-full space-y-3">
@@ -96,10 +94,10 @@ const LecturesTab: React.FC<LecturesTabProps> = ({ language = 'mn' }) => {
                                     <button 
                                         onClick={() => handlePreview(material)}
                                         className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                                        title={language === 'mn' ? 'Харах' : 'Preview'}
+                                        title="Харах"
                                     >
                                         <EyeOutlined className="text-lg" />
-                                        {language === 'mn' ? 'Үзэх' : 'View'}
+                                        Үзэх
                                     </button>
                                 </div>
                             </div>
@@ -142,7 +140,7 @@ const LecturesTab: React.FC<LecturesTabProps> = ({ language = 'mn' }) => {
                     className="mb-6 flex items-center text-blue-600 hover:text-blue-800 transition-colors"
                 >
                     <ArrowLeftOutlined className="mr-2" />
-                    {language === 'mn' ? 'Хичээлүүд рүү буцах' : 'Back to Subjects'}
+                    Хичээлүүд рүү буцах
                 </button>
 
                 <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-6">
@@ -156,14 +154,14 @@ const LecturesTab: React.FC<LecturesTabProps> = ({ language = 'mn' }) => {
                                 {selectedSubject.teacher}
                             </span>
                             <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
-                                {language === 'mn' ? 'Кредит' : 'Credit'}: {selectedSubject.credit}
+                                Кредит: {selectedSubject.credit}
                             </span>
                         </div>
                     </div>
                 </div>
 
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                    {language === 'mn' ? `Лекцүүд (${totalLectures})` : `Lectures (${totalLectures})`}
+                    Лекцүүд ({totalLectures})
                 </h3>
 
                 <div className="space-y-3">
@@ -184,7 +182,7 @@ const LecturesTab: React.FC<LecturesTabProps> = ({ language = 'mn' }) => {
                             </div>
                             <div className="flex items-center gap-3">
                                 <span className="text-sm text-gray-400">
-                                    {lecture.materials.length} {language === 'mn' ? 'материал' : 'materials'}
+                                    {lecture.materials.length} материал
                                 </span>
                                 <PlayCircleOutlined className="text-2xl text-blue-500" />
                             </div>
@@ -211,7 +209,7 @@ const LecturesTab: React.FC<LecturesTabProps> = ({ language = 'mn' }) => {
     return (
         <div className="p-5 font-sans">
             <h2 className="text-xl font-semibold text-gray-800 mb-6">
-                {language === 'mn' ? 'Хичээлүүд' : 'Subjects'}
+                Хичээлүүд
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {SUBJECTS.map((subject) => (
@@ -230,10 +228,10 @@ const LecturesTab: React.FC<LecturesTabProps> = ({ language = 'mn' }) => {
                         <div className="border-t border-gray-200 pt-3">
                             <div className="flex justify-between items-center">
                                 <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">
-                                    {language === 'mn' ? 'КР' : 'CR'}: {subject.credit}
+                                    КР: {subject.credit}
                                 </span>
                                 <span className="text-xs text-gray-500">
-                                    {subject.lectures.length} {language === 'mn' ? 'лекц' : 'lectures'}
+                                    {subject.lectures.length} лекц
                                 </span>
                             </div>
                             <p className="mt-2 text-sm text-gray-600">{subject.teacher}</p>

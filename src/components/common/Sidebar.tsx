@@ -232,7 +232,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }}
         closeIcon={<CloseOutlined className="text-gray-500" />}
         className="md:hidden"
-        destroyOnClose={false}
+        destroyOnHidden={false}
       >
         <SidebarContent {...contentProps} />
       </Drawer>

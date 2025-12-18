@@ -1,37 +1,38 @@
 /**
- * Utility functions for formatting values
+ * Formatting utilities for dates, numbers, and text
  * @module utils/format
  */
 
-import { Language } from '@/types';
+import dayjs from 'dayjs';
+import 'dayjs/locale/mn';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+// Configure dayjs
+dayjs.extend(relativeTime);
+dayjs.locale('mn');
 
 // =============================================================================
-// CONSTANTS
-// =============================================================================
-
-/** Progress color thresholds */
-const PROGRESS_COLORS = {
-  complete: '#52c41a',
-  high: '#1890ff',
-  medium: '#faad14',
-  low: '#ff4d4f',
-} as const;
-
-// =============================================================================
-// CURRENCY FORMATTING
+// NUMBER FORMATTING
 // =============================================================================
 
 /**
- * Formats a number as Mongolian Tugrik currency
- * @param amount - The amount to format
- * @returns Formatted currency string
+ * Format a number as Mongolian currency (₮)
+ * @param amount - Amount to format
+ * @returns Formatted currency string with thousands separators
+ * @example formatCurrency(1500000) // "₮1,500,000"
  */
-export const formatMoney = (amount: number): string => {
-  return new Intl.NumberFormat('mn-MN', {
-    style: 'currency',
-    currency: 'MNT',
-    minimumFractionDigits: 0,
-  }).format(amount);
+export const formatCurrency = (amount: number): string => {
+  return `₮${amount.toLocaleString('mn-MN')}`;
+};
+
+/**
+ * Format a number with thousands separators
+ * @param num - Number to format
+ * @returns Formatted number string
+ * @example formatNumber(1234567) // "1,234,567"
+ */
+export const formatNumber = (num: number): string => {
+  return num.toLocaleString('mn-MN');
 };
 
 // =============================================================================
@@ -39,48 +40,96 @@ export const formatMoney = (amount: number): string => {
 // =============================================================================
 
 /**
- * Formats a date string to localized format
+ * Format a date string for display in Mongolian format
+ * @param dateString - ISO date string or date object
+ * @returns Formatted date in Mongolian locale (YYYY оны MM сарын DD)
+ */
+export const formatDate = (dateString: string): string => {
+  return dayjs(dateString).format('YYYY оны MM сарын DD');
+};
+
+/**
+ * Format a date with time
+ * @param dateString - ISO date string or date object
+ * @returns Formatted date and time
+ */
+export const formatDateTime = (dateString: string): string => {
+  return dayjs(dateString).format('YYYY/MM/DD HH:mm');
+};
+
+/**
+ * Get relative time from now in Mongolian
+ * @param dateString - ISO date string or date object
+ * @returns Relative time string (e.g., "2 цагийн өмнө")
+ */
+export const formatRelativeTime = (dateString: string): string => {
+  return dayjs(dateString).fromNow();
+};
+
+/**
+ * Format a date for short display (MM/DD)
+ * @param dateString - ISO date string or date object
+ * @returns Short date format
+ */
+export const formatShortDate = (dateString: string): string => {
+  return dayjs(dateString).format('MM/DD');
+};
+
+/**
+ * Format message date - shows relative time if recent, otherwise shows date
  * @param dateString - ISO date string
- * @param locale - Target locale ('mn' or 'en')
- * @returns Formatted date string
+ * @returns Formatted date string based on recency
  */
-export const formatDate = (dateString: string, locale: Language = 'mn'): string => {
-  const date = new Date(dateString);
-  const localeMap: Record<Language, string> = {
-    mn: 'mn-MN',
-    en: 'en-US',
-  };
-  
-  return date.toLocaleDateString(localeMap[locale], {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
+export const formatMessageDate = (dateString: string): string => {
+  const date = dayjs(dateString);
+  const now = dayjs();
+  const diffDays = now.diff(date, 'day');
+
+  if (diffDays === 0) {
+    return date.format('HH:mm');
+  } else if (diffDays === 1) {
+    return 'Өчигдөр';
+  } else if (diffDays < 7) {
+    return date.format('dddd');
+  } else {
+    return date.format('MM/DD');
+  }
 };
 
 // =============================================================================
-// NUMERIC CALCULATIONS
+// TEXT FORMATTING
 // =============================================================================
 
 /**
- * Calculates percentage with rounding
- * @param partial - The partial value
- * @param total - The total value
- * @returns Rounded percentage (0-100)
+ * Truncate text to a maximum length with ellipsis
+ * @param text - Text to truncate
+ * @param maxLength - Maximum length before truncation
+ * @returns Truncated text with "..." if needed
  */
-export const calculatePercentage = (partial: number, total: number): number => {
-  if (total === 0) return 0;
-  return Math.round((partial / total) * 100);
+export const truncateText = (text: string, maxLength: number): string => {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength) + '...';
 };
 
 /**
- * Gets color for progress bars based on percentage
- * @param percentage - The percentage value (0-100)
- * @returns Hex color string
+ * Capitalize first letter of a string
+ * @param str - String to capitalize
+ * @returns Capitalized string
  */
-export const getProgressColor = (percentage: number): string => {
-  if (percentage >= 100) return PROGRESS_COLORS.complete;
-  if (percentage >= 50) return PROGRESS_COLORS.high;
-  if (percentage >= 25) return PROGRESS_COLORS.medium;
-  return PROGRESS_COLORS.low;
+export const capitalize = (str: string): string => {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+/**
+ * Format file size in human-readable format
+ * @param bytes - File size in bytes
+ * @returns Formatted file size (e.g., "1.5 MB")
+ */
+export const formatFileSize = (bytes: number): string => {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
 };

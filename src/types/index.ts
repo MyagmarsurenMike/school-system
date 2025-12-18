@@ -2,11 +2,17 @@
 // CORE TYPES - Fundamental types used throughout the application
 // =============================================================================
 
-/** Supported languages for internationalization */
-export type Language = 'mn' | 'en';
-
 /** User role type for permission-based UI */
 export type UserRole = 'student' | 'teacher' | 'admin' | 'finance' | 'manager';
+
+/** Sender roles - Only these roles can send messages */
+export type SenderRole = Extract<UserRole, 'teacher' | 'manager' | 'finance'>;
+
+/** Message delivery status */
+export type MessageStatus = 'sent' | 'delivered' | 'read';
+
+/** Message priority level */
+export type MessagePriority = 'low' | 'normal' | 'high' | 'urgent';
 
 /** Payment status type */
 export type PaymentStatus = 'paid' | 'pending' | 'overdue';
@@ -27,23 +33,10 @@ export type CourseMaterialType = 'pdf' | 'ppt';
 // BASE INTERFACES - Common patterns used across entities
 // =============================================================================
 
-/** Base interface for entities with bilingual names */
-interface BilingualEntity {
-  name: string;
-  nameEn: string;
-}
-
-/** Base interface for entities with bilingual titles */
-interface BilingualTitleEntity {
-  title: string;
-  titleEn: string;
-}
-
 /** Base interface for course-related entities */
 interface CourseBase {
   courseCode: string;
   courseName: string;
-  courseNameEn: string;
 }
 
 // =============================================================================
@@ -51,8 +44,9 @@ interface CourseBase {
 // =============================================================================
 
 /** Represents a student in the system */
-export interface Student extends BilingualEntity {
+export interface Student {
   id: string;
+  name: string;
   major: string;
   gpa: number;
   semester: string;
@@ -65,8 +59,9 @@ export interface Student extends BilingualEntity {
 }
 
 /** Represents a teacher in the system */
-export interface Teacher extends BilingualEntity {
+export interface Teacher {
   id: string;
+  name: string;
   email: string;
   phone: string;
   department: string;
@@ -112,8 +107,9 @@ export interface Schedule extends CourseBase {
 // =============================================================================
 
 /** Represents a calendar event */
-export interface CalendarEvent extends BilingualTitleEntity {
+export interface CalendarEvent {
   id: string;
+  title: string;
   date: string;
   type: CalendarEventType;
   description?: string;
@@ -134,8 +130,9 @@ export interface Payment {
 }
 
 /** Represents student payment permission status */
-export interface StudentPaymentPermission extends BilingualEntity {
+export interface StudentPaymentPermission {
   studentId: string;
+  name: string;
   paymentStatus: PaymentStatus;
   canViewGrades: boolean;
   totalAmount: number;
@@ -148,8 +145,9 @@ export interface StudentPaymentPermission extends BilingualEntity {
 // =============================================================================
 
 /** Represents an uploaded lecture file by a teacher */
-export interface Lecture extends BilingualTitleEntity {
+export interface Lecture {
   id: string;
+  title: string;
   courseId: string;
   description?: string;
   uploadDate: string;
@@ -195,7 +193,6 @@ export interface Subject {
 export interface StudentInput {
   id: string;
   name: string;
-  nameEn: string;
   major: string;
   year: number;
   email: string;
@@ -207,7 +204,6 @@ export interface StudentInput {
 export interface StudentGradeInput {
   studentId: string;
   studentName: string;
-  studentNameEn: string;
   courseId: string;
   grade?: string;
   gradePoint?: number;
@@ -221,7 +217,6 @@ export interface StudentScheduleInput {
   studentId: string;
   courseCode: string;
   courseName: string;
-  courseNameEn: string;
   teacher: string;
   room: string;
   dayOfWeek: number;
@@ -355,4 +350,77 @@ export interface LayoutConfig {
     branding?: HeaderBranding;
     userMenuItems?: UserMenuItem[];
   };
+}
+
+// =============================================================================
+// MESSAGING & NOTIFICATION ENTITIES
+// =============================================================================
+
+/** Represents a user who can send or receive messages */
+export interface User {
+  id: string;
+  name: string;
+  role: UserRole;
+  email: string;
+  phone?: string;
+  department?: string;
+  photo?: string;
+}
+
+/** Represents a message in the system */
+export interface Message {
+  id: string;
+  /** Sender user ID */
+  senderId: string;
+  /** Sender full details */
+  sender: User;
+  /** Receiver user ID */
+  receiverId: string;
+  /** Receiver full details */
+  receiver: User;
+  /** Message subject/title */
+  subject: string;
+  /** Message content/body */
+  content: string;
+  /** Message priority level */
+  priority: MessagePriority;
+  /** Current delivery status */
+  status: MessageStatus;
+  /** When the message was sent */
+  sentAt: string;
+  /** When the message was delivered (optional) */
+  deliveredAt?: string;
+  /** When the message was read (optional) */
+  readAt?: string;
+  /** Whether the message has attachments */
+  hasAttachment?: boolean;
+  /** Attachment URLs if any */
+  attachments?: string[];
+}
+
+/** Input type for creating a new message */
+export interface MessageInput {
+  receiverId: string;
+  subject: string;
+  content: string;
+  priority: MessagePriority;
+  attachments?: File[];
+}
+
+/** Message statistics for dashboard */
+export interface MessageStats {
+  totalSent: number;
+  totalReceived: number;
+  unreadCount: number;
+  readCount: number;
+}
+
+/** Filter criteria for message list */
+export interface MessageFilter {
+  status?: MessageStatus;
+  priority?: MessagePriority;
+  receiverRole?: UserRole;
+  dateFrom?: string;
+  dateTo?: string;
+  searchTerm?: string;
 }

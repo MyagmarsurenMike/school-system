@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Button, Input, Card, Form, Checkbox, message } from 'antd';
 import { 
   UserOutlined, 
@@ -78,6 +79,13 @@ export default function LoginPage() {
       <div className="grid grid-cols-[1fr_2fr] max-h-screen h-screen">
         <div className="grow flex items-center justify-center p-4 relative z-10 bg-gray-100">
           <div className="w-full max-w-md">
+            {/* <Image
+              src="/image.png"
+              alt="HIS Logo"
+              width={200}
+              height={200}
+              className="mx-auto"
+            /> */}
             <div className="mb-8 text-center">
               <h1 className="text-3xl font-bold text-gray-800 mb-2">HIS System</h1>
               <p className="text-gray-600">Сургуулийн мэдээллийн нэгдсэн систем</p>
@@ -172,8 +180,12 @@ export default function LoginPage() {
             </Card>
           </div>
         </div>
-        <div>
-
+        <div className="w-full h-full flex items-center justify-center bg-white">
+          <img
+            src="/cover.svg"
+            alt="Login Background"
+            className="max-w-full max-h-full object-contain"
+          />
         </div>
       </div>
 

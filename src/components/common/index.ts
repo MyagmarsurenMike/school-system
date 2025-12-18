@@ -16,5 +16,5 @@ export { Sidebar } from './Sidebar';
 export { TopHeader } from './TopHeader';
 
 // Legacy - kept for backward compatibility, will be deprecated
-export { AppSidebar } from './AppSidebar';
+export { default as AppSidebar } from './AppSidebar';
 export type { AppSidebarProps } from './AppSidebar';

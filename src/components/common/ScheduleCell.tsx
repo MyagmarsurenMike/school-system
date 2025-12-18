@@ -2,14 +2,12 @@
 
 import React from 'react';
 import { EditOutlined } from '@ant-design/icons';
-import { Schedule, Language, ScheduleType } from '@/types';
+import { Schedule, ScheduleType } from '@/types';
 import { getScheduleTypeStyle } from '@/constants/schedule';
 
 export interface ScheduleCellProps {
   /** Schedule item to display */
   schedule: Schedule;
-  /** Current language */
-  language: Language;
   /** Whether the cell is editable */
   editable?: boolean;
   /** Click handler */
@@ -24,7 +22,6 @@ export interface ScheduleCellProps {
  */
 export const ScheduleCell: React.FC<ScheduleCellProps> = ({
   schedule,
-  language,
   editable = false,
   onClick,
   compact = false,
@@ -52,15 +49,10 @@ export const ScheduleCell: React.FC<ScheduleCellProps> = ({
         </div>
       )}
       <div className="font-semibold">{schedule.courseCode}</div>
-      <div className="truncate">
-        {language === 'mn' ? schedule.courseName : schedule.courseNameEn}
-      </div>
+      <div className="truncate">{schedule.courseName}</div>
       {!compact && (
         <div className="text-[10px] mt-1">
-          {language === 'mn' 
-            ? `${schedule.room}(${schedule.teacher.split(' ')[0]})` 
-            : schedule.room
-          }
+          {`${schedule.room}(${schedule.teacher.split(' ')[0]})`}
         </div>
       )}
     </div>

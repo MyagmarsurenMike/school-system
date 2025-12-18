@@ -3,16 +3,13 @@
 import { useState, useMemo } from 'react';
 import { Card, Tabs, Select, Button, message } from 'antd';
 import { FilterOutlined, ClearOutlined } from '@ant-design/icons';
-import { Schedule, Language, UserRole } from '@/types';
+import { Schedule, UserRole } from '@/types';
 import { ScheduleGrid, ScheduleFormModal, ScheduleFormValues } from '@/components/common';
-import GradesTable from './GradesTable';
-import { mockGrades } from '@/data/mockData';
 import { 
-  scheduleTranslations, 
-  COURSE_OPTIONS, 
-  getCourseSelectOptions,
-  getClassTimeSelectOptions,
-  getYearSelectOptions,
+  SCHEDULE_LABELS, 
+  COURSES, 
+  CLASS_TIMES,
+  YEARS,
   ClassTimeType,
   YearType
 } from '@/constants/schedule';
@@ -25,7 +22,6 @@ export interface ExtendedSchedule extends Schedule {
 
 export interface WeeklyScheduleViewProps {
   schedules: ExtendedSchedule[];
-  language: Language;
   userRole?: UserRole;
   onScheduleUpdate?: (schedules: ExtendedSchedule[]) => void;
 }
@@ -36,7 +32,6 @@ export interface WeeklyScheduleViewProps {
  */
 export default function WeeklyScheduleView({ 
   schedules: initialSchedules, 
-  language, 
   userRole = 'student',
   onScheduleUpdate 
 }: WeeklyScheduleViewProps) {
@@ -50,7 +45,6 @@ export default function WeeklyScheduleView({
   const [filterClassTime, setFilterClassTime] = useState<ClassTimeType | null>(null);
   const [filterYear, setFilterYear] = useState<YearType | null>(null);
 
-  const t = scheduleTranslations[language];
   const canEdit = userRole === 'teacher';
 
   // Filter schedules based on selected filters
@@ -88,13 +82,12 @@ export default function WeeklyScheduleView({
   };
 
   const handleSave = (values: ScheduleFormValues, isEdit: boolean) => {
-    const selectedCourse = COURSE_OPTIONS.find(c => c.value === values.courseCode);
+    const selectedCourse = COURSES.find(c => c.value === values.courseCode);
     
     const scheduleData: ExtendedSchedule = {
       id: editingSchedule?.id || `schedule-${Date.now()}`,
       courseCode: values.courseCode,
       courseName: selectedCourse?.label.split(' - ')[1] || values.courseName || '',
-      courseNameEn: selectedCourse?.labelEn.split(' - ')[1] || values.courseNameEn || values.courseCode,
       teacher: values.teacher,
       room: values.room,
       dayOfWeek: selectedCell?.day || 1,
@@ -110,10 +103,10 @@ export default function WeeklyScheduleView({
       newSchedules = schedules.map(s => 
         s.id === editingSchedule.id ? scheduleData : s
       );
-      message.success(t.updateSuccess);
+      message.success(SCHEDULE_LABELS.updateSuccess);
     } else {
       newSchedules = [...schedules, scheduleData];
-      message.success(t.saveSuccess);
+      message.success(SCHEDULE_LABELS.saveSuccess);
     }
 
     setSchedules(newSchedules);
@@ -126,7 +119,7 @@ export default function WeeklyScheduleView({
     setSchedules(newSchedules);
     onScheduleUpdate?.(newSchedules);
     setIsModalOpen(false);
-    message.success(t.deleteSuccess);
+    message.success(SCHEDULE_LABELS.deleteSuccess);
   };
 
   // Filter toolbar component
@@ -134,36 +127,36 @@ export default function WeeklyScheduleView({
     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 p-3 sm:p-4 bg-gray-50 border-b border-gray-200">
       <div className="flex items-center gap-2 text-gray-600">
         <FilterOutlined className="text-sm sm:text-base" />
-        <span className="font-medium text-xs sm:text-sm">{t.filters}:</span>
+        <span className="font-medium text-xs sm:text-sm">{SCHEDULE_LABELS.filters}:</span>
       </div>
       
       <div className="flex flex-wrap gap-2 flex-1">
         <Select
           allowClear
-          placeholder={t.allYears}
+          placeholder={SCHEDULE_LABELS.allYears}
           value={filterYear}
           onChange={setFilterYear}
-          options={getYearSelectOptions(language)}
+          options={YEARS}
           className="w-full sm:w-28"
           size="middle"
         />
 
         <Select
           allowClear
-          placeholder={t.allCourses}
+          placeholder={SCHEDULE_LABELS.allCourses}
           value={filterCourse}
           onChange={setFilterCourse}
-          options={getCourseSelectOptions(language)}
+          options={COURSES}
           className="w-full sm:w-48 lg:w-64"
           size="middle"
         />
         
         <Select
           allowClear
-          placeholder={t.allClassTimes}
+          placeholder={SCHEDULE_LABELS.allClassTimes}
           value={filterClassTime}
           onChange={setFilterClassTime}
-          options={getClassTimeSelectOptions(language)}
+          options={CLASS_TIMES}
           className="w-full sm:w-28"
           size="middle"
         />
@@ -178,7 +171,7 @@ export default function WeeklyScheduleView({
             className="text-gray-500 hover:text-red-500 text-xs sm:text-sm"
             size="small"
           >
-            <span className="hidden sm:inline">{t.clearFilters}</span>
+            <span className="hidden sm:inline">{SCHEDULE_LABELS.clearFilters}</span>
           </Button>
         )}
 
@@ -192,14 +185,13 @@ export default function WeeklyScheduleView({
   const tabItems = [
     {
       key: '1',
-      label: <span className="text-xs sm:text-sm">{t.weekly}</span>,
+      label: <span className="text-xs sm:text-sm">{SCHEDULE_LABELS.weekly}</span>,
       children: (
         <div>
           {canEdit && <FilterToolbar />}
           <div className="overflow-x-auto">
             <ScheduleGrid
               schedules={filteredSchedules}
-              language={language}
               editable={canEdit}
               onEmptyCellClick={handleEmptyCellClick}
               onScheduleClick={handleScheduleClick}
@@ -208,15 +200,6 @@ export default function WeeklyScheduleView({
         </div>
       ),
     },
-    // {
-    //   key: '2',
-    //   label: <span className="text-xs sm:text-sm">{t.gradeTable}</span>,
-    //   children: (
-    //     <div className="p-2 sm:p-4">
-    //       <GradesTable grades={mockGrades} language={language} />
-    //     </div>
-    //   ),
-    // },
   ];
 
   return (
@@ -236,7 +219,6 @@ export default function WeeklyScheduleView({
         open={isModalOpen}
         schedule={editingSchedule}
         selectedCell={selectedCell}
-        language={language}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSave}
         onDelete={handleDelete}
