@@ -24,6 +24,7 @@ export interface Student {
     id: string;
     registerId: string;
     name: string;
+    surname?: string;
     major: string;
     year: number;
     age: number;
@@ -103,7 +104,6 @@ const StudentForm: React.FC<StudentFormProps> = ({
     const uploadButton = (
         <div className="flex flex-col items-center justify-center">
             {uploading ? <LoadingOutlined /> : <CameraOutlined className="text-2xl" />}
-            <div className="mt-2 text-sm">Зураг оруулах</div>
         </div>
     );
 
@@ -135,35 +135,72 @@ const StudentForm: React.FC<StudentFormProps> = ({
                 </Upload>
             </div>
 
-            <Form.Item
-                name="name"
-                label="Нэр"
-                rules={[{ required: true, message: "Нэр оруулна уу" }]}
-            >
-                <Input
-                    prefix={<UserOutlined className="text-gray-400" />}
-                    placeholder="Оюутны нэр"
-                    size={isMobile ? "middle" : "large"}
-                />
-            </Form.Item>
+            <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-4`}>
+                <Form.Item
+                    name="name"
+                    label="Нэр"
+                    rules={[{ required: true, message: "Нэр оруулна уу" }]}
+                >
+                    <Input
+                        prefix={<UserOutlined className="text-gray-400" />}
+                        placeholder="Оюутны нэр"
+                        size={isMobile ? "middle" : "large"}
+                    />
+                </Form.Item>
 
-            <Form.Item
-                name="registerId"
-                label="Регистрийн дугаар"
-                rules={[
-                    { required: true, message: "Регистрийн дугаар оруулна уу" },
-                    {
-                        pattern: /^[А-Яа-яӨөҮү]{2}\d{8}$/,
-                        message: "Зөв регистрийн дугаар оруулна уу (жишээ: УБ12345678)"
-                    },
-                ]}
-            >
-                <Input
-                    prefix={<IdcardOutlined className="text-gray-400" />}
-                    placeholder="УБ12345678"
-                    size={isMobile ? "middle" : "large"}
-                />
-            </Form.Item>
+                <Form.Item
+                    name="surname"
+                    label="Овог"
+                    rules={[{ required: true, message: "Овог оруулна уу" }]}
+                >
+                    <Input
+                        prefix={<UserOutlined className="text-gray-400" />}
+                        placeholder="Оюутны овог"
+                        size={isMobile ? "middle" : "large"}
+                    />
+                </Form.Item>
+            </div>
+
+            <div className={`grid grid-cols-12 gap-4`}>
+                <Form.Item
+                    name="registerId"
+                    label="Регистрийн дугаар"
+                    className="col-span-8"
+                    rules={[
+                        { required: true, message: "Регистрийн дугаар оруулна уу" },
+                        {
+                            pattern: /^[А-Яа-яӨөҮү]{2}\d{8}$/,
+                            message: "Зөв регистрийн дугаар оруулна уу (жишээ: УБ12345678)"
+                        },
+                    ]}
+                >
+                    <Input
+                        prefix={<IdcardOutlined className="text-gray-400" />}
+                        placeholder="УБ12345678"
+                        size={isMobile ? "middle" : "large"}
+                    />
+                </Form.Item>
+                
+                <Form.Item
+                    name="age"
+                    label="Нас"
+                    className="flex w-full col-span-4"
+                    rules={[
+                        { required: true, message: "Нас оруулна уу" },
+                        { type: "number", min: 17, max: 100, message: "Нас 16-100 хооронд байх ёстой" },
+                    ]}
+                >
+                    <InputNumber
+                        placeholder="Нас"
+                        size={isMobile ? "middle" : "large"}
+                        className="w-full"
+                        min={16}
+                        max={100}
+                    />
+                </Form.Item>
+            </div>
+
+            
 
             <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-4`}>
                 <Form.Item
@@ -191,22 +228,7 @@ const StudentForm: React.FC<StudentFormProps> = ({
                 </Form.Item>
             </div>
 
-            <Form.Item
-                name="age"
-                label="Нас"
-                rules={[
-                    { required: true, message: "Нас оруулна уу" },
-                    { type: "number", min: 16, max: 100, message: "Нас 16-100 хооронд байх ёстой" },
-                ]}
-            >
-                <InputNumber
-                    placeholder="Нас"
-                    size={isMobile ? "middle" : "large"}
-                    className="w-full"
-                    min={16}
-                    max={100}
-                />
-            </Form.Item>
+
 
             <Form.Item
                 name="email"
@@ -239,7 +261,7 @@ const StudentForm: React.FC<StudentFormProps> = ({
                 />
             </Form.Item>
 
-            <div className={`flex ${isMobile ? 'flex-col' : 'flex-row justify-end'} gap-2 mt-6 pt-4 border-t`}>
+            <div className={`flex ${isMobile ? 'flex-col' : 'flex-row justify-end'} gap-2 mt-6 pt-4`}>
                 <Button
                     size={isMobile ? "middle" : "large"}
                     onClick={onCancel}

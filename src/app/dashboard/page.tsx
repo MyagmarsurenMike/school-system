@@ -58,12 +58,14 @@ export default function DashboardPage() {
       case 'home':
         return (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
-            <div className="lg:col-span-8">
+            <div className="lg:col-span-8 gap-4 space-y-8 sm:space-y-12">
               <WeeklyScheduleView schedules={mockSchedules} language={language} />
+              <div className='my-4'>
+                <GradesTable grades={mockGrades} language={language} />
+              </div>
             </div>
             <div className="lg:col-span-4 space-y-4 sm:space-y-8">
               <StudentProfileCard student={mockStudent} language={language} />
-              <GradesTable grades={mockGrades} language={language} />
             </div>
           </div>
         );

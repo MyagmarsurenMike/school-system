@@ -65,6 +65,7 @@ const createTableColumns = (
     title: <span className="text-xs sm:text-sm">{t.description}</span>,
     dataIndex: 'description',
     key: 'description',
+    // width: 200,
     ellipsis: true,
     render: (desc: string) => (
       <span className="text-xs sm:text-sm">{desc}</span>
@@ -74,7 +75,7 @@ const createTableColumns = (
     title: <span className="text-xs sm:text-sm">{t.amount}</span>,
     dataIndex: 'amount',
     key: 'amount',
-    width: 100,
+    // width: 100,
     align: 'left',
     render: (amount: number) => (
       <span className="font-semibold text-blue-600 text-xs sm:text-sm">{formatMoney(amount)}</span>
@@ -84,7 +85,7 @@ const createTableColumns = (
     title: <span className="text-xs sm:text-sm hidden sm:inline">{t.dueDate}</span>,
     dataIndex: 'dueDate',
     key: 'dueDate',
-    width: 100,
+    // width: 100,
     responsive: ['sm'] as const,
     render: (date: string) => (
       <span className="text-xs sm:text-sm">{formatDate(date)}</span>
@@ -94,7 +95,7 @@ const createTableColumns = (
     title: <span className="text-xs sm:text-sm hidden md:inline">{t.paidDate}</span>,
     dataIndex: 'paidDate',
     key: 'paidDate',
-    width: 100,
+    // width: 100,
     responsive: ['md'] as const,
     render: (date: string) => (
       <span className="text-xs sm:text-sm">{formatDate(date)}</span>
@@ -104,7 +105,7 @@ const createTableColumns = (
     title: <span className="text-xs sm:text-sm">{t.status}</span>,
     dataIndex: 'status',
     key: 'status',
-    width: 90,
+    // width: 90,
     align: 'center',
     render: (status: PaymentStatus) => (
       <PaymentStatusTag status={status} language={language} />

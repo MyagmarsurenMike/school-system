@@ -62,7 +62,7 @@ const createTableColumns = (t: GradesTranslations): ColumnsType<Grade> => [
     title: <span className="text-xs sm:text-sm">{t.credits}</span>,
     dataIndex: 'credits',
     key: 'credits',
-    width: 50,
+    width: 80,
     align: 'center',
     render: (credits: number) => (
       <span className="font-medium text-xs sm:text-sm">{credits}</span>
@@ -72,7 +72,7 @@ const createTableColumns = (t: GradesTranslations): ColumnsType<Grade> => [
     title: <span className="text-xs sm:text-sm">{t.grade}</span>,
     dataIndex: 'grade',
     key: 'grade',
-    width: 60,
+    width: 80,
     align: 'center',
     render: (grade: string) => <GradeTag grade={grade} />,
   },
@@ -80,7 +80,7 @@ const createTableColumns = (t: GradesTranslations): ColumnsType<Grade> => [
     title: <span className="text-xs sm:text-sm">{t.gradePoint}</span>,
     dataIndex: 'gradePoint',
     key: 'gradePoint',
-    width: 50,
+    width: 80,
     align: 'center',
     render: (point: number) => (
       <span className="font-semibold text-gray-900 text-xs sm:text-sm">{point.toFixed(1)}</span>

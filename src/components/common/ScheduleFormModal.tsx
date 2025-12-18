@@ -115,7 +115,7 @@ export const ScheduleFormModal: React.FC<ScheduleFormModalProps> = ({
       onCancel={handleClose}
       footer={null}
       width={500}
-      destroyOnClose
+      destroyOnHidden
     >
       <Form
         form={form}
