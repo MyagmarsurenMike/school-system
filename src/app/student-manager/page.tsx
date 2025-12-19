@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Card, Statistic, Typography } from 'antd';
 import { 
   CalendarOutlined,
@@ -13,27 +14,27 @@ import { getSidebarMenuItems, getRoleBranding } from '@/constants/navigation';
 import { StudentManager } from '@/components/teacher';
 import { StudentEdit } from '@/components/student';
 import { FinanceGradePermission } from '@/components/finance';
+import { NotificationTab } from '@/components/shared';
+import { User } from '@/types';
 
 const { Title } = Typography;
+
+// Mock current manager user
+const mockManagerUser: User = {
+  id: 'M001',
+  name: 'Менежер Б.Оюунболд',
+  role: 'manager',
+  email: 'b.oyunbold@university.edu.mn',
+  phone: '+976 9999-9991',
+  department: 'Удирдлага',
+};
 
 export default function StudentManagerPage() {
   const [activeMenu, setActiveMenu] = useState('students');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const sidebarItems = getSidebarMenuItems('manager');
-  const branding = getRoleBranding('manager');
 
-  const handleMenuClick = (key: string) => {
-    if (key === 'logout') {
-      window.location.href = '/login';
-      return;
-    }
-    if (key === 'dashboard') {
-      window.location.href = '/teacher';
-      return;
-    }
-    setActiveMenu(key);
-  };
 
   const renderContent = () => {
     switch (activeMenu) {
@@ -84,13 +85,12 @@ export default function StudentManagerPage() {
       case 'grade-permissions':
         return (
           <div className="space-y-6">
-            <div className="mb-4">
-              <Title level={4}>Хуваарь</Title>
-              <p className="text-gray-600">Оюутны ангиудын хуваарь</p>
-            </div>
             <FinanceGradePermission />
           </div>
         );
+
+      case 'notifications':
+        return <NotificationTab currentUser={mockManagerUser} />;
 
       default:
         return (
@@ -115,25 +115,23 @@ export default function StudentManagerPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <TopHeader
-        userName="Менежер"
+        branding={{ 
+          logo: <Image src="/image.png" alt="Logo" width={40} height={40} className="rounded" />,
+          title: 'Менежерийн систем' 
+        }}
         onMobileMenuToggle={() => setMobileMenuOpen(true)}
       />
 
       <Sidebar
         items={sidebarItems}
         activeKey={activeMenu}
-        onMenuClick={handleMenuClick}
         mobileOpen={mobileMenuOpen}
-        onMobileClose={() => setMobileMenuOpen(false)}
+        onMobileClose={() => setMobileMenuOpen(false)} // Recommended: Add this to handle mobile closing
       />
 
-      <main className="md:ml-64 mt-14 sm:mt-16 min-h-screen">
-        <div className="p-3 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-          <div className="mb-6">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{getCurrentTitle()}</h1>
-            <p className="text-gray-600 mt-1 text-sm sm:text-base">Оюутнуудын мэдээллийг удирдах</p>
-          </div>
-
+      {/* Main content with proper spacing for header and sidebar */}
+      <main className="pt-14 sm:pt-16 md:pl-64 min-h-screen">
+        <div className="p-4 sm:p-6 max-w-7xl mx-auto">
           <div className="animate-fade-in">
             {renderContent()}
           </div>

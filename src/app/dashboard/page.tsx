@@ -1,13 +1,24 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Sidebar, TopHeader } from '@/components/common';
 import { getSidebarMenuItems, getRoleBranding } from '@/constants/navigation';
 import { StudentProfileCard, GradesTable, StudentCertificate } from '@/components/student';
-import { WeeklyScheduleView } from '@/components/shared';
+import { WeeklyScheduleView, NotificationTab } from '@/components/shared';
 import { PaymentsTable } from '@/components/finance';
 import { mockStudent, mockGrades, mockSchedules, mockPayments } from '@/data/mockData';
 import { LecturesTab } from '@/components/teacher';
+import { User } from '@/types';
+
+// Convert mockStudent to User type for NotificationTab
+const mockStudentUser: User = {
+  id: mockStudent.id,
+  name: mockStudent.name,
+  role: 'student',
+  email: mockStudent.email,
+  phone: mockStudent.phone,
+};
 
 export default function DashboardPage() {
   const [activeMenu, setActiveMenu] = useState('home');
@@ -29,8 +40,12 @@ export default function DashboardPage() {
         return (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
             <div className="lg:col-span-8 space-y-8">
-              <WeeklyScheduleView schedules={mockSchedules} />
-              <GradesTable grades={mockGrades} />
+              <div>
+                <WeeklyScheduleView schedules={mockSchedules} />
+              </div>
+              <div>
+                <GradesTable grades={mockGrades} />
+              </div>
             </div>
             <div className="lg:col-span-4">
               <StudentProfileCard student={mockStudent} />
@@ -43,14 +58,7 @@ export default function DashboardPage() {
       
       case 'student-info':
         return (
-          <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-            <div className="md:col-span-1">
-              <StudentProfileCard student={mockStudent} />
-            </div>
-            <div className='md:col-span-2'>
-              <StudentCertificate student={mockStudent} />
-            </div>
-          </div>
+          <StudentCertificate student={mockStudent} />
         );
       
       case 'payments':
@@ -58,6 +66,9 @@ export default function DashboardPage() {
       
       case 'lessons':
         return <LecturesTab />;
+      
+      case 'notifications':
+        return <NotificationTab currentUser={mockStudentUser} />;
       
       default:
         return (
@@ -71,6 +82,10 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <TopHeader 
+        branding={{ 
+          logo: <Image src="/image.png" alt="Logo" width={40} height={40} className="rounded" />,
+          title: 'Оюутны систем' 
+        }}
         userName={mockStudent.name}
         onMobileMenuToggle={() => setMobileMenuOpen(true)}
       />
@@ -83,8 +98,9 @@ export default function DashboardPage() {
         onMobileClose={() => setMobileMenuOpen(false)}
       />
       
-      <main className="md:ml-52 mt-14 sm:mt-16 p-3 sm:p-6">
-        <div className="max-w-[1600px] mx-auto">
+      {/* Main content with proper spacing for header and sidebar */}
+      <main className="pt-14 sm:pt-16 md:pl-64 min-h-screen">
+        <div className="p-4 sm:p-6 max-w-[1600px] mx-auto">
           {renderContent()}
         </div>
       </main>

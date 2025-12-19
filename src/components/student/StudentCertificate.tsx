@@ -29,14 +29,7 @@ export default function StudentCertificate({ student }: StudentCertificateProps)
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-4 flex justify-end gap-2 print:hidden">
-        <Button icon={<PrinterOutlined />} onClick={handlePrint}>
-          Хэвлэх
-        </Button>
-        <Button icon={<DownloadOutlined />} type="primary" onClick={handleDownload}>
-          Татах
-        </Button>
-      </div>
+
 
       <Card ref={certificateRef} className="certificate shadow-lg border-2 border-gray-300 rounded-lg print:shadow-none print:border-0">
         {/* Header */}
@@ -145,6 +138,14 @@ export default function StudentCertificate({ student }: StudentCertificateProps)
           </div>
         </div>
       </Card>
+      <div className="mb-4 flex justify-end gap-2 print:hidden mt-4">
+        <Button icon={<PrinterOutlined />} onClick={handlePrint}>
+          Хэвлэх
+        </Button>
+        <Button icon={<DownloadOutlined />} type="primary" onClick={handleDownload}>
+          Татах
+        </Button>
+      </div>    
     </div>
   );
 }

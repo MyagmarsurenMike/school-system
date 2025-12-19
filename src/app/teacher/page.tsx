@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Card, Avatar, Statistic, Typography } from 'antd';
 import { 
   BookOutlined, 
@@ -14,8 +15,10 @@ import { Sidebar, TopHeader } from '@/components/common';
 import { getSidebarMenuItems, getRoleBranding } from '@/constants/navigation';
 import { TeacherGradeManagement, TeacherLectureUpload } from '@/components/teacher';
 import { NotificationTab } from '@/components/shared';
-import { mockTeacher, mockCourses } from '@/data/mockData';
+import { mockTeacher, mockCourses, mockGrades } from '@/data/mockData';
 import { User } from '@/types';
+import GradePermisson from '@/components/finance/FinanceGradePermission';
+import PaymentTable from '@/components/teacher/TeacherGradeManagement';
 
 const { Title } = Typography;
 
@@ -35,14 +38,6 @@ export default function TeacherPage() {
 
   const sidebarItems = getSidebarMenuItems('teacher');
   const branding = getRoleBranding('teacher');
-
-  const handleMenuClick = (key: string) => {
-    if (key === 'logout') {
-      console.log('Logout clicked');
-      return;
-    }
-    setActiveKey(key);
-  };
 
   const renderContent = () => {
     switch (activeKey) {
@@ -130,7 +125,7 @@ export default function TeacherPage() {
           </div>
         );
       case 'grades':
-        return <TeacherGradeManagement courses={mockCourses} />;
+        return <TeacherGradeManagement courses={mockGrades.map(grade => ({ ...grade, teacherId: mockTeacher.id }))} />;
       case 'upload':
         return <TeacherLectureUpload courses={mockCourses} />;
       case 'notifications':
@@ -143,20 +138,26 @@ export default function TeacherPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <TopHeader
-        userName={mockTeacher.name}
+        branding={{ 
+          logo: <Image src="/image.png" alt="Logo" width={40} height={40} className="rounded" />,
+          title: 'Багшийн систем' 
+        }}
         onMobileMenuToggle={() => setMobileMenuOpen(true)}
       />
 
       <Sidebar
         items={sidebarItems}
         activeKey={activeKey}
-        onMenuClick={handleMenuClick}
         mobileOpen={mobileMenuOpen}
-        onMobileClose={() => setMobileMenuOpen(false)}
+        onMenuClick={(key: string) => {
+          setActiveKey(key);
+          setMobileMenuOpen(false);
+        }}
       />
 
-      <main className="md:ml-64 mt-14 sm:mt-16 transition-all duration-200">
-        <div className="p-4 sm:p-8 max-w-7xl mx-auto">
+      {/* Main content with proper spacing for header and sidebar */}
+      <main className="pt-14 sm:pt-16 md:pl-64 min-h-screen">
+        <div className="p-4 sm:p-6 max-w-7xl mx-auto">
           <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
             <div className="flex items-center gap-4">
               <Avatar size={64} icon={<UserOutlined />} className="bg-blue-100 text-blue-600" />

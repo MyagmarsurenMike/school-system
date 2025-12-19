@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { App } from 'antd';
 import { Sidebar, TopHeader } from '@/components/common';
 import { getSidebarMenuItems, getRoleBranding } from '@/constants/navigation';
@@ -57,7 +58,11 @@ export default function FinancePage() {
     <App>
       <div className="min-h-screen bg-gray-50">
         <TopHeader
-          userName="Санхүү хэлтэс"
+          branding={{ 
+            logo: <Image src="/image.png" alt="Logo" width={40} height={40} className="rounded" />,
+            title: 'Санхүүгийн систем' 
+          }}
+          userName="Санхүү хэлтэс" 
           onMobileMenuToggle={() => setMobileMenuOpen(true)}
         />
 
@@ -69,8 +74,9 @@ export default function FinancePage() {
           onMobileClose={() => setMobileMenuOpen(false)}
         />
 
-        <main className="md:ml-64 mt-14 sm:mt-16 p-4 sm:p-6">
-          <div className="max-w-7xl mx-auto">
+        {/* Main content with proper spacing for header and sidebar */}
+        <main className="pt-14 sm:pt-16 md:pl-64 min-h-screen">
+          <div className="p-4 sm:p-6 max-w-7xl mx-auto">
             {renderContent()}
           </div>
         </main>

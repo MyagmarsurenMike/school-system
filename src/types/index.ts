@@ -317,6 +317,8 @@ export interface TopHeaderProps {
   userName?: string;
   /** User avatar URL */
   userAvatar?: string;
+  /** User role to display */
+  userRole?: UserRole;
   /** User dropdown menu items */
   userMenuItems?: UserMenuItem[];
   /** Callback when user menu item is clicked */

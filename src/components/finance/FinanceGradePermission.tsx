@@ -1,97 +1,194 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, Table, Switch, Input, Space, message } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Table, Input, InputNumber, Popconfirm, Form, Switch, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { StudentPaymentPermission } from '@/types';
-import { PaymentStatusTag } from '@/components/common';
-import { COMMON_LABELS } from '@/constants';
+import { mockStudentPayments } from '@/data/mockData';
+import type { StudentPaymentPermission } from '@/types';
 
-export interface FinanceGradePermissionProps {
-  students?: StudentPaymentPermission[];
+interface EditableCellProps {
+  editing: boolean;
+  dataIndex: string;
+  title: string;
+  inputType: 'number' | 'text' | 'switch';
+  record: StudentPaymentPermission;
+  index: number;
+  children: React.ReactNode;
 }
 
-/**
- * Finance grade permission component for managing student grade access
- */
-export default function FinanceGradePermission({ 
-  students = [] 
-}: FinanceGradePermissionProps) {
-  const [searchText, setSearchText] = useState('');
-  const [data, setData] = useState<StudentPaymentPermission[]>(students);
+const EditableCell: React.FC<EditableCellProps> = ({
+  editing,
+  dataIndex,
+  title,
+  inputType,
+  record,
+  index,
+  children,
+  ...restProps
+}) => {
+  let inputNode;
+  switch (inputType) {
+    case 'number':
+      inputNode = <InputNumber style={{ width: '100%' }} />;
+      break;
+    case 'switch':
+      inputNode = <Switch checked={record[dataIndex as keyof StudentPaymentPermission] as boolean} />;
+      break;
+    default:
+      inputNode = <Input />;
+  }
 
-  const handlePermissionChange = (studentId: string, canView: boolean) => {
-    setData(prev => 
-      prev.map(student => 
-        student.studentId === studentId 
-          ? { ...student, canViewGrades: canView }
-          : student
-      )
-    );
-    message.success(
-      canView 
-        ? 'Дүн харах эрх нээгдлээ' 
-        : 'Дүн харах эрх хаагдлаа'
-    );
+  return (
+    <td {...restProps}>
+      {editing ? (
+        <Form.Item
+          name={dataIndex}
+          style={{ margin: 0 }}
+          valuePropName={inputType === 'switch' ? 'checked' : 'value'}
+          rules={[{ required: true, message: `Please input ${title}!` }]}
+        >
+          {inputNode}
+        </Form.Item>
+      ) : (
+        children
+      )}
+    </td>
+  );
+};
+
+const GradePermisson: React.FC = () => {
+  const [form] = Form.useForm();
+  const [data, setData] = useState<StudentPaymentPermission[]>(mockStudentPayments);
+  const [editingKey, setEditingKey] = useState<string>('');
+
+  const isEditing = (record: StudentPaymentPermission) => record.studentId === editingKey;
+
+  const edit = (record: StudentPaymentPermission) => {
+    form.setFieldsValue({ ...record });
+    setEditingKey(record.studentId);
+  };
+
+  const cancel = () => {
+    setEditingKey('');
+  };
+
+  const save = async (studentId: string) => {
+    try {
+      const row = (await form.validateFields()) as StudentPaymentPermission;
+      const newData = [...data];
+      const index = newData.findIndex(item => studentId === item.studentId);
+      if (index > -1) {
+        newData[index] = { ...newData[index], ...row };
+        setData(newData);
+        setEditingKey('');
+        message.success('Updated successfully');
+      }
+    } catch (errInfo) {
+      console.log('Validate Failed:', errInfo);
+    }
   };
 
   const columns: ColumnsType<StudentPaymentPermission> = [
     {
-      title: 'ID',
+      title: 'Student ID',
       dataIndex: 'studentId',
       key: 'studentId',
-      width: 100,
     },
     {
-      title: 'Нэр',
+      title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      filteredValue: [searchText],
-      onFilter: (value, record) => {
-        const search = value.toString().toLowerCase();
-        return (
-          record.name.toLowerCase().includes(search) ||
-          record.studentId.toLowerCase().includes(search)
+      editable: true,
+    },
+    {
+      title: 'Payment Status',
+      dataIndex: 'paymentStatus',
+      key: 'paymentStatus',
+      editable: true,
+    },
+    {
+      title: 'Can View Grades',
+      dataIndex: 'canViewGrades',
+      key: 'canViewGrades',
+      editable: true,
+      render: (_, record) => record.canViewGrades ? 'Yes' : 'No',
+    },
+    {
+      title: 'Total Amount',
+      dataIndex: 'totalAmount',
+      key: 'totalAmount',
+      editable: true,
+      render: (amount: number) => amount.toLocaleString(),
+    },
+    {
+      title: 'Paid Amount',
+      dataIndex: 'paidAmount',
+      key: 'paidAmount',
+      editable: true,
+      render: (amount: number) => amount.toLocaleString(),
+    },
+    {
+      title: 'Semester',
+      dataIndex: 'semester',
+      key: 'semester',
+      editable: true,
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (_, record) => {
+        const editable = isEditing(record);
+        return editable ? (
+          <span>
+            <a onClick={() => save(record.studentId)} style={{ marginRight: 8 }}>
+              Save
+            </a>
+            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+              <a>Cancel</a>
+            </Popconfirm>
+          </span>
+        ) : (
+          <a disabled={editingKey !== ''} onClick={() => edit(record)}>
+            Edit
+          </a>
         );
       },
     },
-    {
-      title: 'Дүн харах эрх',
-      dataIndex: 'canViewGrades',
-      key: 'canViewGrades',
-      render: (canView: boolean, record) => (
-        <Switch
-          checked={canView}
-          onChange={(checked) => handlePermissionChange(record.studentId, checked)}
-        />
-      ),
-    },
-    {
-      title: 'Төлбөрийн байдал',
-      dataIndex: 'paymentStatus',
-      key: 'paymentStatus',
-      render: (status) => <PaymentStatusTag status={status} />,
-    },
   ];
 
+  const mergedColumns = columns.map(col => {
+    if (!col.editable) return col;
+
+    return {
+      ...col,
+      onCell: (record: StudentPaymentPermission) => ({
+        record,
+        inputType: col.dataIndex === 'canViewGrades' ? 'switch' : (col.dataIndex === 'totalAmount' || col.dataIndex === 'paidAmount' ? 'number' : 'text'),
+        dataIndex: col.dataIndex,
+        title: col.title,
+        editing: isEditing(record),
+      }),
+    };
+  });
+
   return (
-    <div>
-      <Card>
-        <Space direction="vertical" style={{ width: '100%' }}>
-          <Input
-            placeholder="Хайх"
-            prefix={<SearchOutlined />}
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-          <Table
-            columns={columns}
-            dataSource={data}
-            rowKey="studentId"
-          />
-        </Space>
-      </Card>
-    </div>
+    <Form form={form} component={false}>
+      <Table
+        components={{
+          body: {
+            cell: EditableCell,
+          },
+        }}
+        bordered
+        dataSource={data}
+        columns={mergedColumns}
+        rowKey="studentId"
+        pagination={{
+          onChange: cancel,
+        }}
+      />
+    </Form>
   );
-}
+};
+
+export default GradePermisson;

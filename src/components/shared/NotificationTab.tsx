@@ -123,6 +123,11 @@ export default function NotificationTab({ currentUser }: NotificationTabProps) {
   const handleViewMessage = (message: Message) => {
     setSelectedMessage(message);
     setDetailModalVisible(true);
+    
+    // Auto-mark as read when viewing received messages
+    if (message.receiverId === currentUser.id && message.status !== 'read') {
+      handleMarkAsRead(message.id);
+    }
   };
 
   /**

@@ -221,7 +221,6 @@ export default function TeacherGradeManagement({ courses }: TeacherGradeManageme
 
   return (
     <div className="space-y-6">
-      <Card className="shadow-sm border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex-1 max-w-md">
             <label className="block text-sm font-medium text-gray-700 mb-1">{t.selectCourse}</label>
@@ -259,7 +258,6 @@ export default function TeacherGradeManagement({ courses }: TeacherGradeManageme
             </div>
           )}
         </div>
-      </Card>
 
       {selectedCourse ? (
         <Card className="shadow-sm border-gray-200" styles={{ body: { padding: 0 } }}>

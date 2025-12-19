@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useCallback } from 'react';
-import { Avatar, Dropdown, Space, Button } from 'antd';
+import { Avatar, Dropdown, Space, Button, Tag } from 'antd';
 import type { MenuProps } from 'antd';
 import { MenuOutlined, DownOutlined, UserOutlined } from '@ant-design/icons';
-import type { TopHeaderProps, UserMenuItem } from '@/types';
+import type { TopHeaderProps, UserMenuItem, UserRole } from '@/types';
 
 // =============================================================================
 // CONSTANTS
@@ -15,6 +15,24 @@ const DEFAULT_CONFIG = {
   HEIGHT: 64,
   MOBILE_HEIGHT: 56,
 } as const;
+
+/** Role display labels */
+const ROLE_LABELS: Record<UserRole, string> = {
+  student: 'Оюутан',
+  teacher: 'Багш',
+  admin: 'Админ',
+  finance: 'Санхүү',
+  manager: 'Менежер',
+};
+
+/** Role badge colors */
+const ROLE_COLORS: Record<UserRole, string> = {
+  student: 'blue',
+  teacher: 'purple',
+  admin: 'red',
+  finance: 'green',
+  manager: 'orange',
+};
 
 // =============================================================================
 // HELPER FUNCTIONS
@@ -60,25 +78,34 @@ interface HeaderBrandingProps {
   logo?: React.ReactNode;
   title?: string;
   subtitle?: string;
+  userRole?: UserRole;
 }
 
-const HeaderBranding: React.FC<HeaderBrandingProps> = ({ logo, title, subtitle }) => (
+const HeaderBranding: React.FC<HeaderBrandingProps> = ({ logo, title, subtitle, userRole }) => (
   <div className="flex items-center space-x-2 sm:space-x-3">
     {logo && <div className="shrink-0">{logo}</div>}
-    {(title || subtitle) && (
-      <div className="flex flex-col min-w-0">
+    <div className="flex flex-col min-w-0">
+      <div className="flex items-center gap-2">
         {title && (
           <h1 className="text-base sm:text-lg font-bold text-gray-900 truncate">
             {title}
           </h1>
         )}
-        {subtitle && (
-          <span className="text-xs text-gray-500 truncate hidden sm:block">
-            {subtitle}
-          </span>
+        {userRole && (
+          <Tag 
+            color={ROLE_COLORS[userRole]} 
+            className="text-xs font-semibold m-0 hidden sm:inline-block"
+          >
+            {ROLE_LABELS[userRole]}
+          </Tag>
         )}
       </div>
-    )}
+      {subtitle && (
+        <span className="text-xs text-gray-500 truncate hidden sm:block">
+          {subtitle}
+        </span>
+      )}
+    </div>
   </div>
 );
 
@@ -151,6 +178,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
  *     subtitle: 'Dashboard' 
  *   }}
  *   userName="John Doe"
+ *   userRole="student"
  *   userMenuItems={[
  *     { key: 'profile', label: 'Profile', icon: <UserOutlined /> },
  *     { key: 'divider', type: 'divider' },
@@ -167,6 +195,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
   branding,
   userName,
   userAvatar,
+  userRole,
   userMenuItems = [],
   onUserMenuClick,
   showMobileToggle = true,
@@ -204,12 +233,13 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
             </div>
           )}
 
-          {/* Branding */}
+          {/* Branding with Role Badge */}
           {branding && (
             <HeaderBranding
               logo={branding.logo}
               title={branding.title}
               subtitle={branding.subtitle}
+              userRole={userRole}
             />
           )}
         </div>
