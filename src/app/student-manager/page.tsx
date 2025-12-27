@@ -35,6 +35,14 @@ export default function StudentManagerPage() {
 
   const sidebarItems = getSidebarMenuItems('manager');
 
+  const handleMenuClick = (key: string) => {
+    if (key === 'logout') {
+      console.log('Logout clicked');
+      return;
+    }
+    setActiveMenu(key);
+  };
+
 
   const renderContent = () => {
     switch (activeMenu) {
@@ -112,6 +120,7 @@ export default function StudentManagerPage() {
     }
   };
 
+
   return (
     <div className="min-h-screen bg-gray-50">
       <TopHeader
@@ -125,8 +134,9 @@ export default function StudentManagerPage() {
       <Sidebar
         items={sidebarItems}
         activeKey={activeMenu}
+        onMenuClick={handleMenuClick}
         mobileOpen={mobileMenuOpen}
-        onMobileClose={() => setMobileMenuOpen(false)} // Recommended: Add this to handle mobile closing
+        onMobileClose={() => setMobileMenuOpen(false)}  
       />
 
       {/* Main content with proper spacing for header and sidebar */}

@@ -131,6 +131,8 @@ export interface Payment {
 
 /** Represents student payment permission status */
 export interface StudentPaymentPermission {
+  major: any;
+  year: number;
   studentId: string;
   name: string;
   paymentStatus: PaymentStatus;
